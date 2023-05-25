@@ -1,7 +1,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-This project implements the poll app.
+This project implements the petstagram app.
 
 <!-- GETTING STARTED -->
 ## Getting Started
