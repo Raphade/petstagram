@@ -42,3 +42,12 @@ This part describes how to run the application
    ```
    python <pathto>/manage.py runserver
    ```
+2. to access the database open
+   ```
+   http://127.0.0.1:8000/admin
+   ```
+3. create db admin account if not created yet
+   ```
+   python <pathto>/manage.py createsuperuser
+   ```
+3. follow instructions in the terminal
