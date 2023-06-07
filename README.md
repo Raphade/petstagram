@@ -34,20 +34,43 @@ This part describes the installation for windows 11.
    pip install -r requirements.txt
    ```
 
+### Set up DB
+
+This part describes how to set up the DB
+
+1. download postgresql 15.3
+   https://www.enterprisedb.com/downloads/postgres-postgresql-downloads
+2. install postgresql
+   ```
+   pw: 123456789
+   port: 5432
+   Locale: German
+   ```
+3. start pgAdmin 4 and login with the pw
+4. create a DB with the name "petstagram"
+
+
+
 ### Run application
 
 This part describes how to run the application
 
-1. run the server
+1. activate your virtual enviremont
+   ```
+   source venv/Scripts/activate
+   ```
+2. run the server
    ```
    python <pathto>/manage.py runserver
    ```
-2. to access the database open
+3. to access the database open
    ```
    http://127.0.0.1:8000/admin
    ```
-3. create db admin account if not created yet
+4. create db admin account if not created yet
    ```
    python <pathto>/manage.py createsuperuser
    ```
-3. follow instructions in the terminal
+   follow instructions in the terminal
+   Username: postgres
+   Password: 123456789
