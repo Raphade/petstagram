@@ -82,3 +82,206 @@ body {
   .account-heading {
     font-size: 2.5rem;
   }
+
+
+/* Stil für den Post-Container */
+.post-container {
+  margin-top: 20px;
+}
+
+/* Stil für einen einzelnen Post */
+.post {
+  border: 1px solid #ccc;
+  margin-bottom: 20px;
+  padding: 10px;
+}
+
+/* Stil für den Post-Header */
+.post-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.profile-picture {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+/* Stil für den Post-Bildbereich */
+.post-image img {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+/* Stil für die Post-Beschreibung */
+.post-description {
+  margin-bottom: 10px;
+}
+
+/* Stil für den Post-Footer */
+.post-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.post-date {
+  font-size: 12px;
+  margin-left: auto;
+}
+
+.post-likes {
+  font-size: 14px;
+}
+.post-comment {
+  margin-right: 20px;
+}
+
+/* Stil für die Kommentare */
+.post-comments {
+  margin-top: 10px;
+}
+
+.comment {
+  margin-bottom: 10px;
+  padding: 5px;
+  border: 1px solid #ccc;
+}
+
+.commenter {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.commenter .profile-picture {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.comment-text {
+  margin-bottom: 5px;
+}
+
+.comment-likes {
+  font-size: 12px;
+}
+
+.like-button {
+  font-size: 30px;
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+.like-button:hover {
+  transform: scale(1.3);
+  opacity: 0.7;
+}
+.comment-button {
+  font-size: 30px;
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+.comment-button:hover {
+  transform: scale(1.3);
+  opacity: 0.7;
+}
+
+
+/* CSS für das Modal-Fenster */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  max-width: 600px;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.post-details {
+  display: flex;
+}
+
+.post-image img {
+  width: 400px;
+  height: auto;
+}
+
+.poster-info {
+  display: flex;
+  align-items: center;
+}
+
+.profile-picture {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.comments-section {
+  margin-top: 10px;
+}
+
+.comment {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.commenter-info {
+  display: flex;
+  align-items: center;
+}
+
+.commenter-info img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.actions {
+  margin-top: 10px;
+}
+
+.like-button,
+.comment-button {
+  display: inline-block;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.comment-input input[type="text"] {
+  width: 80%;
+  padding: 5px;
+  margin-right: 5px;
+}
+
+.comment-input button {
+  padding: 5px 10px;
+}
