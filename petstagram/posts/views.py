@@ -3,6 +3,10 @@ from django.db.models.functions import TruncDate
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Count
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+
+from .forms import PostForm
 from .models import Post
 from users.models import Profile
 
@@ -11,12 +15,10 @@ from users.models import Profile
 def home(request):
     req_user = request.user
     liked_posts = []
-    # Überprüfen, ob der Benutzer eingeloggt ist
-    print("req_user:",req_user)
-
     if req_user.is_authenticated:
-        profile = Profile(user=req_user)
-        if profile.subscribed.all():
+        profile = get_object_or_404(Profile, user=req_user)
+        subscribed_profiles = Profile.objects.filter(user=req_user).exclude(pk=profile.pk)
+        if subscribed_profiles.exists():
             # Posts des eingeloggten Benutzers abrufen und nach Erstellungsdatum sortieren
             posts = Post.objects.filter(poster__in=profile.subscribed.all()).order_by('-date')
             liked_posts = profile.liked_posts.all()
@@ -46,6 +48,7 @@ def home(request):
     return render(request, 'posts/home.html', {'page_obj': page_obj, 'liked_posts': liked_posts})
 
 
+@login_required()
 def like_post(request, post_id):
     if request.method == 'POST' and request.user.is_authenticated:
         post = get_object_or_404(Post, id=post_id)
@@ -83,9 +86,20 @@ def get_post(request, post_id):
     return JsonResponse({'post': post_data})
 
 
+@login_required()
+def create_post(request):
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES)
+        if form.is_valid():
+            post = form.save(commit=False)
+            # Get the current instance object to display in the template
+            post.poster = get_object_or_404(Profile, user=request.user)
+            post.save()
+            return render(request, 'posts/createpost.html', {'title': 'Create Post', 'form': form, 'post': post})
+    else:
+        form = PostForm()
+        return render(request, 'posts/createpost.html', {'title': 'Create Post', 'form': form})
+
+
 def about(request):
     return render(request, 'posts/about.html', {'title': 'About'})
-
-
-def create_post(request):
-    return render(request, 'posts/createpost.html', {'title': 'Create Post'})

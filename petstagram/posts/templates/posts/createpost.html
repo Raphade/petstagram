@@ -3,43 +3,42 @@
 {% block content %}
     <div class="content-section">
         <h2>Create a New Post</h2>
-        <form enctype="multipart/form-data" method="POST">
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            {% if user.is_authenticated %}
-                <div class="mb-3">
-                    <label for="description" class="form-label">Description:</label>
-                    <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
-                </div>
-                <div class="mb-3">
-                    <label for="date" class="form-label">Date:</label>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <input type="date" class="form-control" id="date" name="date" readonly>
-                        </div>
-                        <div class="col-md-6">
-                            <input type="time" class="form-control" id="time" name="time" readonly>
-                        </div>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="media" class="form-label">Media:</label>
-                    <input type="file" class="form-control" id="media" name="media" accept="image/*" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Create Post</button>
-            {% else %}
-                <p>You need to be logged in to create a new post.</p>
-                <a href="{% url 'login' %}">Login</a> | <a href="{% url 'register' %}">Register</a>
-            {% endif %}
+            <div class="form-group">
+                {{ form.description.label_tag }}
+                {{ form.description }}
+            </div>
+            <div class="upload-box" id="upload-box">
+                <div id="preview" class="image-preview"></div>
+                <label for="image-upload" class="upload-label">
+                    <i class="fas fa-plus-circle"></i>
+                    Drag and Drop or Click to Add Image
+                </label>
+                <input type="file" class="file-input" id="image-upload" accept="image/*" onchange="previewImage(event)">
+            </div>
+            <button type="submit" class="upload-button">Upload</button>
         </form>
-    </div>
 
+        {% if post %}
+            <h3>Succesfully uploaded!</h3>
+            <img src="{{ post.media.url }}" alt="connect" style="max-height:300px">
+        {% endif %}
+    </div>
     <script>
-        // Set current date and time for the date and time fields
-        document.addEventListener("DOMContentLoaded", function() {
-            var currentDate = new Date().toISOString().split("T")[0];
-            var currentTime = new Date().toLocaleTimeString("en-US", { hour12: false });
-            document.getElementById("date").value = currentDate;
-            document.getElementById("time").value = currentTime;
-        });
+        function previewImage(event) {
+            let reader = new FileReader();
+            reader.onload = function () {
+                let box = document.getElementById('upload-box');
+                let image = document.createElement('img');
+                image.src = reader.result;
+                let imageToRemove = box.children[3];
+                if (box.contains(imageToRemove)) {
+                    box.removeChild(imageToRemove);
+                }
+                box.appendChild(image);
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
     </script>
 {% endblock content %}

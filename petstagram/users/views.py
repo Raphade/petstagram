@@ -13,9 +13,7 @@ def register(request):
         if form.is_valid():
             new_user = form.save()
             print("new_user:\t", new_user)
-
-            profile = Profile(user = new_user, subscribed = )
-
+            profile = Profile(user=new_user)
             profile.save()
             username = form.cleaned_data.get('username')
             messages.success(request, f'Account for {username} has been created!')
