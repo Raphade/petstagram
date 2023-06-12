@@ -72,3 +72,7 @@ def get_post(request, post_id):
 
 def about(request):
     return render(request, 'posts/about.html', {'title': 'About'})
+
+
+def create_post(request):
+    return render(request, 'posts/createpost.html', {'title': 'Create Post'})

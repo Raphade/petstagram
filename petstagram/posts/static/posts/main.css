@@ -285,3 +285,17 @@ body {
 .comment-input button {
   padding: 5px 10px;
 }
+
+.sidebar-list:hover {
+  text-decoration: none;
+  background-color: #eaeaea;
+}
+.sidebar-list-link:link, .sidebar-list-link:active, .sidebar-list-link:visited, .sidebar-list-link:hover, .sidebar-list-link:focus{
+  text-decoration: none;
+}
+
+.sidebar-list{
+  text-decoration: none;
+  cursor: pointer;
+}
+
