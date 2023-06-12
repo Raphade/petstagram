@@ -8,15 +8,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+          integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="{% static 'posts/main.css' %}">
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.7.0.js" integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.js"
+            integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
 
     <title>Petstagram</title>
 </head>
@@ -25,7 +32,8 @@
     <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
         <div class="container">
             <a class="navbar-brand mr-4" href="/">Petstagram</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle"
+                    aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarToggle">
@@ -36,11 +44,11 @@
                 <!-- Navbar Right Side -->
                 <div class="navbar-nav">
                     {% if user.is_authenticated %}
-                        <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
-                        <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
+                    <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
+                    <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
                     {% else %}
-                        <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
-                        <a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
+                    <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
+                    <a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
                     {% endif %}
                 </div>
             </div>
@@ -54,13 +62,25 @@
                 <h3>Our Sidebar</h3>
                 <p class='text-muted'>Links
                 <ul class="list-group">
-                    <a href="#"><li class="list-group-item list-group-item-light sidebar-list">Link 1</li></a>
-                    <a href="#"><li class="list-group-item list-group-item-light sidebar-list">Link 2</li></a>
-                    <a href="#"><li class="list-group-item list-group-item-light sidebar-list">Link 3</li></a>
+                    <a href="#">
+                        <li class="list-group-item list-group-item-light sidebar-list">Link 1</li>
+                    </a>
+                    <a href="#">
+                        <li class="list-group-item list-group-item-light sidebar-list">Link 2</li>
+                    </a>
+                    <a href="#">
+                        <li class="list-group-item list-group-item-light sidebar-list">Link 3</li>
+                    </a>
                     {% if user.is_authenticated %}
-                        <a href="/posts/"><li class="list-group-item list-group-item-light sidebar-list"><i class="far fa-plus-square"></i> New Post </li></a>
+                    <a href="/posts/">
+                        <li class="list-group-item list-group-item-light sidebar-list"><i
+                                class="far fa-plus-square"></i> New Post
+                        </li>
+                    </a>
                     {% else %}
-                        <li onclick="showAlert()" class="list-group-item list-group-item-light sidebar-list"><i class="far fa-plus-square"></i> New Post </li>
+                    <li onclick="showAlert()" class="list-group-item list-group-item-light sidebar-list"><i
+                            class="far fa-plus-square"></i> New Post
+                    </li>
                     {% endif %}
                 </ul>
                 </p>
@@ -68,18 +88,19 @@
         </div>
         <div class="col-md-8">
             {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-{{message.tags}}">
-                        {{message}}
-                    </div>
-                {% endfor %}
+            {% for message in messages %}
+            <div class="alert alert-{{message.tags}}">
+                {{message}}
+            </div>
+            {% endfor %}
             {% endif %}
             {% block content %}{% endblock %}
         </div>
     </div>
 
     <!-- Not logged in modal -->
-    <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
+    <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -93,17 +114,27 @@
                     <p>Please log in or register.</p>
                 </div>
                 <div class="modal-footer">
-                    <a href="/login/" class="btn btn-light" data-dismiss="modal">Login</a>
-                    <a href="/register/" class="btn btn-secondary" data-dismiss="modal">Register</a>
+                    <a href="/login/" class="btn btn-light" onclick="redirectToLogin()">Login</a>
+                    <a href="/register/" class="btn btn-secondary" onclick="redirectToRegister()">Register</a>
                 </div>
             </div>
         </div>
     </div>
     <script>
-        function showAlert() {
-            $('#alertModal').modal('show');
-        }
+    function showAlert() {
+        $('#alertModal').modal('show');
+    }
+
+    function redirectToLogin() {
+        window.location.href = "/login/";
+    }
+
+    function redirectToRegister() {
+        window.location.href = "/register/";
+    }
+
     </script>
+
 </main>
 </body>
 </html>

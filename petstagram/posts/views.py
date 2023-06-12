@@ -3,18 +3,31 @@ from django.db.models.functions import TruncDate
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Count
-from posts.models import Post
+from .models import Post
+from users.models import Profile
 
 
 # Create your views here.
 def home(request):
-    user = request.user
+    req_user = request.user
     liked_posts = []
     # Überprüfen, ob der Benutzer eingeloggt ist
-    if user.is_authenticated and user.profile.subscribed.all():
-        # Posts des eingeloggten Benutzers abrufen und nach Erstellungsdatum sortieren
-        posts = Post.objects.filter(poster__in=user.profile.subscribed.all()).order_by('-date')
-        liked_posts = user.profile.liked_posts.all()
+    print("req_user:",req_user)
+
+    if req_user.is_authenticated:
+        profile = Profile(user=req_user)
+        if profile.subscribed.all():
+            # Posts des eingeloggten Benutzers abrufen und nach Erstellungsdatum sortieren
+            posts = Post.objects.filter(poster__in=profile.subscribed.all()).order_by('-date')
+            liked_posts = profile.liked_posts.all()
+        else:
+            # Zufällige Posts abrufen, sortiert nach absteigendem Erstellungsdatum
+            # Auf maximal 100 Posts pro Tag begrenzen
+            posts = Post.objects.annotate(truncated_date=TruncDate('date')).order_by('?')
+            post_dates = posts.values('date').annotate(count=Count('id'))
+            for post_date in post_dates:
+                if post_date['count'] > 100:
+                    posts = posts.filter(date=post_date['date'])[:100]
     else:
         # Zufällige Posts abrufen, sortiert nach absteigendem Erstellungsdatum
         # Auf maximal 100 Posts pro Tag begrenzen
