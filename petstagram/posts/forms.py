@@ -11,8 +11,11 @@ class PostForm(forms.ModelForm):
         'rows': '4',
     }))
 
-    media = forms.ImageField(widget=forms.ClearableFileInput(attrs={
-        'class': 'form-control mb-3 custom-file-input',
+    media = forms.ImageField(widget=forms.FileInput(attrs={
+        'class': 'form-control mb-3 file-input',
+        'id': 'image-upload',
+        'accept':'image/*',
+        'onchange': 'previewImage(event)',
         'style': '',
         'placeholder': 'Image',
         'accept': 'image/*',

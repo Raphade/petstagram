@@ -104,8 +104,8 @@ a.article-title:hover {
 }
 
 .profile-picture {
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     margin-right: 10px;
 }
@@ -234,15 +234,9 @@ a.article-title:hover {
 }
 
 .poster-info {
+    margin-left: 10px;
     display: flex;
     align-items: center;
-}
-
-.profile-picture {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    margin-right: 10px;
 }
 
 .comments-section {

@@ -96,6 +96,8 @@ def create_post(request):
             post.poster = get_object_or_404(Profile, user=request.user)
             post.save()
             return render(request, 'posts/createpost.html', {'title': 'Create Post', 'form': form, 'post': post})
+        else:
+            print(form.errors)
     else:
         form = PostForm()
         return render(request, 'posts/createpost.html', {'title': 'Create Post', 'form': form})
