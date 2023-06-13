@@ -132,43 +132,8 @@ def profile(request, user_id):
         'user': profile,
         'user_posts': page_obj,
     }
-    return render(request, 'posts/profile.html', {'profile': profile, 'user_posts': page_obj})
+    return render(request, 'posts/profile.html', {'user': user, 'user_posts': page_obj})
 
-@login_required()
-def sub_profile(request, user_id):
-    user = Profile.objects.get(pk=request.user.id)
-    to_sub = Profile.objects.get(pk=user_id)
-    user.subscribed.add(to_sub)
-    user.save()
-
-    return profile(request, user_id)
-@login_required()
-def unsub_profile(request, user_id):
-    user = Profile.objects.get(pk=request.user.id)
-    to_unsub = Profile.objects.get(pk=user_id)
-    user.subscribed.remove(to_unsub)
-    user.save()
-
-    return profile(request, user_id)
-
-@login_required()
-def sub_s_profile(request, user_id, query):
-    user = Profile.objects.get(pk=request.user.id)
-    to_sub = Profile.objects.get(pk=user_id)
-    print(to_sub)
-    user.subscribed.add(to_sub)
-    user.save()
-
-    return search(request, query)
-
-@login_required()
-def unsub_s_profile(request, user_id, query):
-    user = Profile.objects.get(pk=request.user.id)
-    to_unsub = Profile.objects.get(pk=user_id)
-    user.subscribed.remove(to_unsub)
-    user.save()
-
-    return search(request, query)
 
 @login_required
 def comment(request, post_id):
@@ -194,3 +159,65 @@ def comment(request, post_id):
             })
     else:
         return HttpResponseRedirect('/')
+
+    @login_required()
+    def sub_profile(request, user_id):
+        user = Profile.objects.get(pk=request.user.id)
+        to_sub = Profile.objects.get(pk=user_id)
+        user.subscribed.add(to_sub)
+        user.save()
+
+        return profile(request, user_id)
+
+    @login_required()
+    def unsub_profile(request, user_id):
+        user = Profile.objects.get(pk=request.user.id)
+        to_unsub = Profile.objects.get(pk=user_id)
+        user.subscribed.remove(to_unsub)
+        user.save()
+
+        return profile(request, user_id)
+
+    @login_required()
+    def sub_s_profile(request, user_id, query):
+        user = Profile.objects.get(pk=request.user.id)
+        to_sub = Profile.objects.get(pk=user_id)
+        print(to_sub)
+        user.subscribed.add(to_sub)
+        user.save()
+
+        return search(request, query)
+
+    @login_required()
+    def unsub_s_profile(request, user_id, query):
+        user = Profile.objects.get(pk=request.user.id)
+        to_unsub = Profile.objects.get(pk=user_id)
+        user.subscribed.remove(to_unsub)
+        user.save()
+
+        return search(request, query)
+
+    @login_required
+    def comment(request, post_id):
+        post = get_object_or_404(Post, id=post_id)
+        comments = Comment.objects.filter(post=post)
+        if request.method == 'POST':
+            print("POST IST ANGEKOMMEN")
+            comment_form = CommentForm(request.POST)
+            if comment_form.is_valid():
+                print("FORM IST VALID")
+                new_comment = comment_form.save(commit=False)
+                new_comment.post = post
+                new_comment.commenter = request.user.profile
+                new_comment.save()
+                return JsonResponse({
+                    'success': True,
+                    'comment': {
+                        'commenter_username': new_comment.commenter.user.username,
+                        'commenter_profile_picture': new_comment.commenter.profile_picture.url,
+                        'text': new_comment.text,
+                        'comment_likes_count': new_comment.comment_likes.count(),
+                    }
+                })
+        else:
+            return HttpResponseRedirect('/')
