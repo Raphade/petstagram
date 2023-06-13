@@ -1,0 +1,19 @@
+{% extends "posts/base.html" %}
+
+{% block content %}
+
+    <h2>Search results for "{{ query }}"</h2>
+
+    {% if profiles %}
+        <ul>
+            {% for profile in profiles %}
+                <li>
+                    <a href="{% url 'load-profile' profile.user.id %}">{{ profile.user.username }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No profiles found matching your query.</p>
+    {% endif %}
+
+{% endblock %}

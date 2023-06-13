@@ -1,0 +1,14 @@
+{% extends "posts/base.html" %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <h2>Profile of {{ user }}</h2>
+                <div class="post-container">
+                    {% include "blocks/block-posts.html" with user_posts=user_posts %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Hier können Sie auch den gleichen Javascript-Code wie auf der Home-Seite verwenden. -->
+{% endblock %}

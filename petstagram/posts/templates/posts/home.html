@@ -4,52 +4,7 @@
         <div class="row">
             <div class="col-md-8 offset-md-2">
                 <div class="post-container">
-                    {% for post in page_obj %}
-                        <div class="post">
-                            <div class="post-header">
-                                <img class="profile-picture" src="{{ post.poster.profile_picture.url }}" alt="Profile Picture">
-                                <h5>{{ post.poster.user.username }}</h5>
-                            </div>
-                            <div class="post-image">
-                                <img src="{{ post.media.url }}" alt="Post Image" onclick="openModal('{{ post.id }}')">
-                            </div>
-                            <div class="post-description">
-                                <p>{{ post.description }}</p>
-                            </div>
-                            <div class="post-footer">
-                                <div class="post-comment">
-                                    <i class="fas fa-regular fa-comment comment-button" data-post-id="{{ post.id }}"></i>
-                                </div>
-                                <div class="post-likes">
-                                    {% if user.is_authenticated %}
-                                        <i class="fas fa-heart like-button {% if post in liked_posts %} liked{% endif %}" data-post-id="{{ post.id }}"></i>
-                                    {% else %}
-                                        <i class="fas fa-heart like-button" onclick="showAlert()"></i>
-                                    {% endif %}
-                                    {{ post.post_likes.count }}
-                                </div>
-                                <div class="post-date">
-                                    {{ post.date }}
-                                </div>
-                            </div>
-                            <div class="post-comments">
-                                {% for comment in post.comment_set.all %}
-                                    <div class="comment">
-                                        <div class="commenter">
-                                            <img class="profile-picture" src="{{ comment.commenter.profile_picture.url }}" alt="Profile Picture">
-                                            <h5>{{ comment.commenter.username }}</h5>
-                                        </div>
-                                        <div class="comment-text">
-                                            <p>{{ comment.text }}</p>
-                                        </div>
-                                        <div class="comment-likes">
-                                            <i class="fas fa-heart"></i> {{ comment.comment_likes.count }}
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    {% endfor %}
+                    {% include "blocks/block-posts.html" with user_posts=page_obj %}
                 </div>
             </div>
         </div>

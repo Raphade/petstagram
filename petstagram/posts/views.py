@@ -105,3 +105,25 @@ def create_post(request):
 
 def about(request):
     return render(request, 'posts/about.html', {'title': 'About'})
+
+
+def search(request, query):
+    if request.method == 'GET':
+        profiles = Profile.objects.filter(user__username__icontains=query)
+        #posts = Post.objects.filter(caption__icontains=query)
+        return render(request, 'posts/search.html', {'profiles': profiles, 'query': query})
+    
+def profile(request, user_id):
+    user = get_object_or_404(Profile, pk=user_id)
+    print(user)
+    user_posts_list = Post.objects.filter(poster=user).order_by('-date')
+    paginator = Paginator(user_posts_list, 10) # Show 10 posts per page
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'user': user,
+        'user_posts': page_obj,
+    }
+    return render(request, 'posts/profile.html', {'user': user, 'user_posts': page_obj})
