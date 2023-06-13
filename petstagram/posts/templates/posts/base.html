@@ -163,13 +163,12 @@
                 });
             });
             
-        
+            // For Search form
             $("#search-form").on('submit', function(e) {
                 e.preventDefault();
                 let query = $("#search-input").val();
                 if (query === '') {
-                    // Sie könnten hier auf die Startseite oder eine andere Seite umleiten.
-                    window.location.href = "{% url 'posts-home' %}";
+                    window.location.href = "/search/" + "all" + "/";
                 } else {
                     window.location.href = "/search/" + query + "/";
                 }

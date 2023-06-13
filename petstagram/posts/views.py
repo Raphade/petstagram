@@ -109,9 +109,13 @@ def about(request):
 
 def search(request, query):
     if request.method == 'GET':
-        profiles = Profile.objects.filter(user__username__icontains=query)
+        if query == "all":
+            profiles = Profile.objects.all()
+        else:
+            profiles = Profile.objects.filter(user__username__icontains=query)
         #posts = Post.objects.filter(caption__icontains=query)
         return render(request, 'posts/search.html', {'profiles': profiles, 'query': query})
+
     
 def profile(request, user_id):
     user = get_object_or_404(Profile, pk=user_id)

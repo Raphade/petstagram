@@ -2,18 +2,29 @@
 
 {% block content %}
 
-    <h2>Search results for "{{ query }}"</h2>
+    <div class="container mt-5">
+        <h2>Search results for "{{ query }}"</h2>
 
-    {% if profiles %}
-        <ul>
-            {% for profile in profiles %}
-                <li>
-                    <a href="{% url 'load-profile' profile.user.id %}">{{ profile.user.username }}</a>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No profiles found matching your query.</p>
-    {% endif %}
+        {% if profiles %}
+            <div class="row">
+                {% for profile in profiles %}
+                    <div class="col-md-4 mt-4">
+                        <div class="card">
+                            <!-- Assuming the profile has a profile image. If not, you may need to provide a default. -->
+                            <img src="{{ profile.profile_picture.url }}" class="card-img-top" alt="{{ profile.user.username }}'s profile picture">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ profile.user.username }}</h5>
+                                <a href="{% url 'load-profile' profile.user.id %}" class="btn btn-primary">View Profile</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-warning mt-4" role="alert">
+                No profiles found matching your query.
+            </div>
+        {% endif %}
+    </div>
 
 {% endblock %}
