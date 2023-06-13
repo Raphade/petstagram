@@ -3,12 +3,46 @@
 {% block content %}
     <div class="content-section">
       <div class="media">
-        <img class="rounded-circle account-img" src="{{ user.profile.image.url }}">
+        <img class="rounded-circle account-img" src="{{ user.profile.profile_picture.url }}">
         <div class="media-body">
           <h2 class="account-heading">{{ user.username }}</h2>
           <p class="text-secondary">{{ user.email }}</p>
         </div>
       </div>
       <!-- FORM HERE -->
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="upload-box" id="upload-box-profile-pic">
+            <div id="preview" class="image-preview"></div>
+            <label for="upload-box-profile-pic" class="upload-label">
+                <i class="fas fa-plus-circle"></i>
+                Drag and Drop or Click to Add Image
+            </label>
+            {{ form.profile_picture }}
+        </div>
+        <button type="submit" class="upload-button">Upload</button>
+    </form>
     </div>
+    <script>
+
+      function previewImageProfile(event) {
+          console.log("Preview function called");
+          let reader = new FileReader();
+          reader.onload = function () {
+              console.log("test")
+              let box = document.getElementById('upload-box-profile-pic');
+              let image = document.createElement('img');
+              image.src = reader.result;
+              let imageToRemove = box.children[3];
+              if (box.contains(imageToRemove)) {
+                  box.removeChild(imageToRemove);
+              }
+              box.appendChild(image);
+          };
+          reader.readAsDataURL(event.target.files[0]);
+      }
+      
+
+    </script>
 {% endblock content %}
+

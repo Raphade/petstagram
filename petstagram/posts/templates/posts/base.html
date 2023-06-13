@@ -148,6 +148,7 @@
             window.location.href = "/register/";
         }
         
+        // For Search form
         $(document).ready(function(){
             $(document).ready(function () {
                 $("#search-icon").click(function () {
@@ -162,8 +163,7 @@
                     }
                 });
             });
-            
-            // For Search form
+        
             $("#search-form").on('submit', function(e) {
                 e.preventDefault();
                 let query = $("#search-input").val();

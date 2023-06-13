@@ -3,7 +3,11 @@ from .forms import UserRegisterForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from users.models import Profile
-
+from django.shortcuts import render
+from .forms import ProfileUpdateForm
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.contrib.auth.models import User
 
 # Create your views here.
 def register(request):
@@ -25,4 +29,18 @@ def register(request):
 
 @login_required
 def profile(request):
-    return render(request, 'users/profile.html')
+    if request.method == 'POST':
+        p_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+        if p_form.is_valid():
+            p_form.save()
+            return redirect('profile')
+    else:
+        p_form = ProfileUpdateForm()
+
+
+    return render(request, 'users/profile.html', {'form': p_form, 'title': 'Profile'})
+
+
+@receiver(post_save, sender=User)
+def save_profile(sender, instance, **kwargs):
+    instance.profile.save()
