@@ -1,78 +1,134 @@
 {% extends "posts/base.html" %}
 {% block content %}
-    <div class="container">
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <div class="post-container">
-                    {% include "blocks/block-posts.html" with user_posts=page_obj %}
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <div class="pagination">
-                    {% if page_obj.has_previous %}
-                        <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
-                    {% endif %}
-                    <span class="current-page">{{ page_obj.number }}</span>
-                    {% if page_obj.has_next %}
-                        <a href="?page={{ page_obj.next_page_number }}">Next</a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-    <div id="myModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <div class="post-details">
-                <div class="post-image">
-                    <img src="{{ post.media.url }}" alt="Post Image">
-                </div>
-                <div class="post-info">
-                    <div class="poster-info">
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="post-container">
+                {% for post in page_obj %}
+                <div class="post">
+                    <div class="post-header">
                         <img class="profile-picture" src="{{ post.poster.profile_picture.url }}" alt="Profile Picture">
-                        <h5>{{ post.poster.username }}</h5>
+                        <h5>{{ post.poster.user.username }}</h5>
                     </div>
-                    <div class="comments-section">
+                    <div class="post-image">
+                        <img src="{{ post.media.url }}" alt="Post Image" onclick="openModal('{{ post.id }}')">
+                    </div>
+                    <div class="post-description">
+                        <p>{{ post.description }}</p>
+                    </div>
+                    <div class="post-footer">
+                        <div class="post-comment">
+                            <i class="fas fa-regular fa-comment comment-button" data-post-id="{{ post.id }}"></i>
+                        </div>
+                        <div class="post-likes">
+                            {% if user.is_authenticated %}
+                            <i class="fas fa-heart like-button {% if post in liked_posts %} liked{% endif %}"
+                               data-post-id="{{ post.id }}"></i>
+                            {% else %}
+                            <i class="fas fa-heart like-button" onclick="showAlert()"></i>
+                            {% endif %}
+                            {{ post.post_likes.count }}
+                        </div>
+                        <div class="post-date">
+                            {{ post.date }}
+                        </div>
+                    </div>
+                    <div class="post-comments">
                         {% for comment in post.comment_set.all %}
-                            <div class="comment">
-                                <div class="commenter-info">
-                                    <img class="profile-picture" src="{{ comment.commenter.profile_picture.url }}" alt="Profile Picture">
-                                    <h6>{{ comment.commenter.username }}</h6>
-                                </div>
-                                <div class="comment-text">
-                                    <p>{{ comment.text }}</p>
-                                </div>
-                                <div class="comment-likes">
-                                    <i class="fas fa-heart"></i> {{ comment.comment_likes.count }}
-                                </div>
+                        <div class="comment">
+                            <div class="commenter">
+                                <img class="profile-picture" src="{{ comment.commenter.profile_picture.url }}"
+                                     alt="Profile Picture">
+                                <h5>{{ comment.commenter.username }}</h5>
                             </div>
+                            <div class="comment-text">
+                                <p>{{ comment.text }}</p>
+                            </div>
+                            <div class="comment-likes">
+                                <i class="fas fa-heart"></i> {{ comment.comment_likes.count }}
+                            </div>
+                        </div>
                         {% endfor %}
                     </div>
                 </div>
+                {% endfor %}
             </div>
-            <div class="actions">
-                <div class="post-comment">
-                    <i class="fas fa-regular fa-comment comment-button"></i>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="pagination">
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                {% endif %}
+                <span class="current-page">{{ page_obj.number }}</span>
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">Next</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+`
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="mdl-post-details">
+            <div class="mdl-post-image">
+                <img src="{{ post.media.url }}" alt="Post Image">
+            </div>
+            <div class="mdl-post-info">
+                <div class="poster-info">
+                    <img class="profile-picture" src="{{ post.poster.profile_picture.url }}" alt="Profile Picture">
+                    <h5>{{ post.poster.username }}</h5>
                 </div>
-                <div class="post-likes">
-                    {% if user.is_authenticated %}
-                        <i class="fas fa-heart like-button {% if post in liked_posts %} liked{% endif %}" data-post-id="{{ post.id }}"></i>
-                    {% else %}
-                        <i class="fas fa-heart like-button" onclick="showAlert()"></i>
-                    {% endif %}
-                    {{ post.post_likes.count }}
+                <div class="post-description">
+                    <p>{{ post.poster.description }}</p>
                 </div>
-                <div class="comment-input">
-                    <input type="text" placeholder="Add a comment...">
-                    <button class="comment-on-post">Post</button>
+                <div class="comments-section">
+                    {% for comment in post.comment_set.all %}
+                    <div class="comment">
+                        <div class="commenter-info">
+                            <img class="profile-picture" src="{{ comment.commenter.profile_picture.url }}"
+                                 alt="Profile Picture">
+                            <h6>{{ comment.commenter.username }}</h6>
+                        </div>
+                        <div class="comment-text">
+                            <p>{{ comment.text }}</p>
+                        </div>
+                        <div class="comment-likes">
+                            <i class="fas fa-heart"></i> {{ comment.comment_likes.count }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="actions">
+                    <div class="mdl-like-comment">
+                        <div class="post-comment">
+                            <i class="fas fa-regular fa-comment comment-button"></i>
+                        </div>
+                        <div class="post-likes">
+                            {% if user.is_authenticated %}
+                            <i class="fas fa-heart like-button {% if post in liked_posts %} liked{% endif %}"
+                               data-post-id="{{ post.id }}"></i>
+                            {% else %}
+                            <i class="fas fa-heart like-button" onclick="showAlert()"></i>
+                            {% endif %}
+                            {{ post.post_likes.count }}
+                        </div>
+                    </div>
+                    <div class="mdl-comments">
+                        <textarea class="mdl-comment-input" placeholder="Write a comment"></textarea>
+                        <!--                        <input type="text" placeholder="Add a comment...">-->
+                        <button class="mdl-comment-on-post">Post</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
+<script>
         $(document).ready(function() {
             // read CSRF-Token from Cookie
             function getCookie(name) {
@@ -162,7 +218,7 @@
                         let comments = post.comments;
 
                         // Modal mit den abgerufenen Daten aktualisieren
-                        let modalImage = $('.modal-content .post-image img');
+                        let modalImage = $('.modal-content .mdl-post-image img');
                         let posterProfilePicture = $('.modal-content .poster-info .profile-picture');
                         let posterUsername = $('.modal-content .poster-info h5');
                         let commentsSection = $('.modal-content .comments-section');
@@ -203,5 +259,7 @@
                 });
             });
         });
-    </script>
+
+
+</script>
 {% endblock %}
