@@ -24,7 +24,7 @@ def register(request):
             return redirect('posts-home')
     else:
         form = UserRegisterForm()
-    return render(request, 'users/register.html', {'form': form})
+    return render(request, 'users_pet/register.html', {'form': form})
 
 
 @login_required
@@ -37,5 +37,4 @@ def profile(request):
     else:
         p_form = ProfileUpdateForm()
 
-
-    return render(request, 'users/profile.html', {'form': p_form, 'title': 'Profile'})
+    return render(request, 'users_pet/profile.html', {'form': p_form, 'title': 'Profile'})

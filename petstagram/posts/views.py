@@ -8,7 +8,7 @@ from django.utils import timezone
 
 from .forms import PostForm
 from .models import Post
-from users.models import Profile
+from users_pet.models import Profile
 
 
 # Create your views here.
@@ -118,16 +118,52 @@ def search(request, query):
 
     
 def profile(request, user_id):
-    user = get_object_or_404(Profile, pk=user_id)
-    print(user)
-    user_posts_list = Post.objects.filter(poster=user).order_by('-date')
+    profile = Profile.objects.get(pk=user_id)
+    print(profile)
+    user_posts_list = Post.objects.filter(poster=profile).order_by('-date')
     paginator = Paginator(user_posts_list, 10) # Show 10 posts per page
 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     context = {
-        'user': user,
+        'user': profile,
         'user_posts': page_obj,
     }
-    return render(request, 'posts/profile.html', {'user': user, 'user_posts': page_obj})
+    return render(request, 'posts/profile.html', {'profile': profile, 'user_posts': page_obj})
+
+@login_required()
+def sub_profile(request, user_id):
+    user = Profile.objects.get(pk=request.user.id)
+    to_sub = Profile.objects.get(pk=user_id)
+    user.subscribed.add(to_sub)
+    user.save()
+
+    return profile(request, user_id)
+@login_required()
+def unsub_profile(request, user_id):
+    user = Profile.objects.get(pk=request.user.id)
+    to_unsub = Profile.objects.get(pk=user_id)
+    user.subscribed.remove(to_unsub)
+    user.save()
+
+    return profile(request, user_id)
+
+@login_required()
+def sub_s_profile(request, user_id, query):
+    user = Profile.objects.get(pk=request.user.id)
+    to_sub = Profile.objects.get(pk=user_id)
+    print(to_sub)
+    user.subscribed.add(to_sub)
+    user.save()
+
+    return search(request, query)
+
+@login_required()
+def unsub_s_profile(request, user_id, query):
+    user = Profile.objects.get(pk=request.user.id)
+    to_unsub = Profile.objects.get(pk=user_id)
+    user.subscribed.remove(to_unsub)
+    user.save()
+
+    return search(request, query)

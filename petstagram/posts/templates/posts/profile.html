@@ -1,9 +1,26 @@
 {% extends "posts/base.html" %}
+
+{% load custom_tags %}
 {% block content %}
     <div class="container">
         <div class="row">
             <div class="col-md-8 offset-md-2">
-                <h2>Profile of {{ user }}</h2>
+      <div class="media">
+        <img class="rounded-circle account-img" src="{{ profile.profile_picture.url }}">
+        <div class="media-body">
+          <h2 class="account-heading">{{ profile.user.username }}</h2>
+          <p class="text-secondary">{{ profile.user.email }}</p>
+        </div>
+            </div>
+            {% if user.id != profile.user.id %}
+            {% is_subscribed profile user as subbed %}
+            {% if not subbed %}
+            <a href="{% url 'subscribe-profile' profile.user.id %}" class="btn btn-primary">Subscribe</a>
+            {% else %}
+            <a href="{% url 'unsubscribe-profile' profile.user.id %}" class="btn btn-primary">Unsubscribe</a>
+            {% endif %}
+
+            {% endif %}
                 <div class="post-container">
                     {% include "blocks/block-posts.html" with user_posts=user_posts %}
                 </div>
