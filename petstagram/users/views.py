@@ -2,7 +2,7 @@ from django.shortcuts import redirect, render
 from .forms import UserRegisterForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from users.models import Profile
+from .models import Profile
 from django.shortcuts import render
 from .forms import ProfileUpdateForm
 from django.db.models.signals import post_save
@@ -39,8 +39,3 @@ def profile(request):
 
 
     return render(request, 'users/profile.html', {'form': p_form, 'title': 'Profile'})
-
-
-@receiver(post_save, sender=User)
-def save_profile(sender, instance, **kwargs):
-    instance.profile.save()
