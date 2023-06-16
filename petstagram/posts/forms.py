@@ -30,6 +30,9 @@ class CommentForm(forms.ModelForm):
     text = forms.CharField(widget=forms.Textarea(attrs={
         'placeholder': 'Add a comment...',
         'required': 'true',
+        'class': 'mdl-comment-input',
+        'row': '5',
+        'cols': '40',
     }))
 
     class Meta:

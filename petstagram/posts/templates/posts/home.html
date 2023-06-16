@@ -25,12 +25,12 @@
     <div id="myModal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
-        <div class="post-details">
-            <div class="post-image">
+        <div class="mdl-post-details">
+            <div class="mdl-post-image">
                 <img src="{{ post.media.url }}" alt="Post Image">
             </div>
-            <div class="post-info">
-                <div class="poster-info">
+            <div class="mdl-post-info">
+                <div class="mdl-poster-info">
                     <img class="profile-picture" src="{{ post.poster.profile_picture.url }}" alt="Profile Picture">
                     <h5>{{ post.poster.username }}</h5>
                 </div>
@@ -51,36 +51,41 @@
                         </div>
                     {% endfor %}
                 </div>
-            </div>
-        </div>
-        <div class="actions">
-            <div class="post-comment">
-                <i class="fas fa-regular fa-comment comment-button"></i>
-            </div>
-            <div class="post-likes">
-                {% if user.is_authenticated %}
-                    <i class="fas fa-heart like-button {% if post in liked_posts %} liked{% endif %}"
-                       data-post-id="{{ post.id }}"></i>
-                {% else %}
-                    <i class="fas fa-heart like-button" onclick="showAlert()"></i>
-                {% endif %}
-                {{ post.post_likes.count }}
-            </div>
-            {% if user.is_authenticated %}
-                <div class="comment-input">
-                    <form id="comment-form" method="post"
-                          action="">
-                        {% csrf_token %}
-                        {{ comment_form }}
+                <div class="actions">
+                    <div class="mdl-like-comment">
+                        <div class="post-comment">
+                            <i class="fas fa-regular fa-comment comment-button"></i>
+                        </div>
+                        <div class="post-likes">
+                            {% if user.is_authenticated %}
+                            <i class="fas fa-heart like-button {% if post in liked_posts %} liked{% endif %}"
+                               data-post-id="{{ post.id }}"></i>
+                            {% else %}
+                            <i class="fas fa-heart like-button" onclick="showAlert()"></i>
+                            {% endif %}
+                            {{ post.post_likes.count }}
+                        </div>
+
+                    </div>
+                    {% if user.is_authenticated %}
+                    <div class="mdl-comment-input">
+                        <form id="comment-form" method="post" class=".mdl-comments"
+                              action="">
+                            {% csrf_token %}
+                            {{ comment_form }}
+                            <button type="submit" class="comment-on-post">Post</button>
+                        </form>
+                    </div>
+                    {% else %}
+                    <div class="mdl-comment-input">
+                        <input type="text" class="mdl-comment-input" placeholder="You must be logged in to add a comment...">
                         <button type="submit" class="comment-on-post">Post</button>
-                    </form>
+                        {% endif %}
+                    </div>
                 </div>
-            {% else %}
-                <div class="comment-input">
-                <input type="text" placeholder="You must be logged in to add a comment...">
-                <button type="submit" class="comment-on-post">Post</button>
-            {% endif %}
+
             </div>
+
         </div>
     </div>
 
@@ -174,9 +179,9 @@
                         let comments = post.comments;
 
                         // Modal mit den abgerufenen Daten aktualisieren
-                        let modalImage = $('.modal-content .post-image img');
-                        let posterProfilePicture = $('.modal-content .poster-info .profile-picture');
-                        let posterUsername = $('.modal-content .poster-info h5');
+                        let modalImage = $('.modal-content .mdl-post-image img');
+                        let posterProfilePicture = $('.modal-content .mdl-poster-info .profile-picture');
+                        let posterUsername = $('.modal-content .mdl-poster-info h5');
                         let commentsSection = $('.modal-content .comments-section');
 
                         modalImage.attr('src', post.media);
@@ -258,5 +263,10 @@
                 });
             });
         });
-    </script>
+
+
+
+
+
+</script>
 {% endblock %}

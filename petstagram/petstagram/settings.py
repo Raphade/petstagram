@@ -11,8 +11,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import os
 from pathlib import Path
-
 from google.oauth2 import service_account
+from django.core.files.storage import default_storage
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'posts.apps.PostsConfig',
     'users_pet.apps.UsersPetConfig',
     'crispy_forms',
-    'crispy_bootstrap4'
+    'crispy_bootstrap4',
+    'storages'
 ]
 
 MIDDLEWARE = [
