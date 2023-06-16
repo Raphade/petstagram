@@ -13,9 +13,6 @@
                     <div class="post-image">
                         <img src="{{ post.media.url }}" alt="Post Image" onclick="openModal('{{ post.id }}')">
                     </div>
-                    <div class="post-description">
-                        <p>{{ post.description }}</p>
-                    </div>
                     <div class="post-footer">
                         <div class="post-comment">
                             <i class="fas fa-regular fa-comment comment-button" data-post-id="{{ post.id }}"></i>
@@ -32,6 +29,9 @@
                         <div class="post-date">
                             {{ post.date }}
                         </div>
+                    </div>
+                    <div class="post-description">
+                        <p>{{ post.description }}</p>
                     </div>
                     <div class="post-comments">
                         {% for comment in post.comment_set.all %}
@@ -82,7 +82,7 @@
                     <img class="profile-picture" src="{{ post.poster.profile_picture.url }}" alt="Profile Picture">
                     <h5>{{ post.poster.username }}</h5>
                 </div>
-                <div class="post-description">
+                <div class="mdl-post-description">
                     <p>{{ post.poster.description }}</p>
                 </div>
                 <div class="comments-section">
@@ -221,11 +221,13 @@
                         let modalImage = $('.modal-content .mdl-post-image img');
                         let posterProfilePicture = $('.modal-content .poster-info .profile-picture');
                         let posterUsername = $('.modal-content .poster-info h5');
+<!--                        let posterDescription = $('.modal-content .mdl-post-description p');-->
                         let commentsSection = $('.modal-content .comments-section');
 
                         modalImage.attr('src', post.media);
                         posterProfilePicture.attr('src', post.poster_profile_picture);
                         posterUsername.text(post.poster_username);
+<!--                        posterDescription.text(post.poster_description);-->
 
                         // Kommentare in das Modal einfügen
                         commentsSection.empty();
@@ -259,6 +261,7 @@
                 });
             });
         });
+
 
 
 </script>
