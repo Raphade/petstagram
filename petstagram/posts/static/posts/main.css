@@ -73,10 +73,10 @@ a.article-title:hover {
 }
 
 .account-img {
-    height: 125px;
-    width: 125px;
-    margin-right: 20px;
-    margin-bottom: 16px;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
 }
 
 .account-heading {
@@ -100,14 +100,15 @@ a.article-title:hover {
 .post-header {
     display: flex;
     align-items: center;
-    margin-bottom: 10px;
+    margin: 3%;
 }
 
 .profile-picture {
-    width: 30px;
-    height: 30px;
     border-radius: 50%;
-    margin-right: 10px;
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    margin: 1%;
 }
 
 /* Stil für den Post-Bildbereich */
@@ -122,7 +123,7 @@ a.article-title:hover {
 
 /* Stil für die Post-Beschreibung */
 .post-description {
-    margin-bottom: 10px;
+    margin: 3%;
 }
 
 /* Stil für den Post-Footer */
@@ -130,6 +131,7 @@ a.article-title:hover {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin: 3%;
 }
 
 .post-date {
@@ -423,6 +425,15 @@ a.article-title:hover {
     margin-left: 10px;
 }
 
+.mdl-post-description {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    margin: 13px;
+    width: -moz-available;
+}
+
+
 .poster-info img {
   width: 40px;
   height: 40px;
@@ -443,14 +454,12 @@ a.article-title:hover {
 }
 
 .post-image {
-    width: 75%;
+    width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 10px;
-    flex: 2;
-    align-self: flex-start;
 }
 
 .post-info {
