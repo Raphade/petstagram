@@ -1,27 +1,28 @@
 from django.core.paginator import Paginator
 from django.db.models.functions import TruncDate
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 
-from .forms import PostForm
-from .models import Post
 from users_pet.models import Profile
+from .forms import PostForm, CommentForm
+from .models import Post, Comment
 
 
 # Create your views here.
 def home(request):
+    comment_form = CommentForm()
     req_user = request.user
     liked_posts = []
     if req_user.is_authenticated:
         profile = get_object_or_404(Profile, user=req_user)
         subscribed_profiles = Profile.objects.filter(user=req_user).exclude(pk=profile.pk)
+        liked_posts = profile.liked_posts.all()
         if subscribed_profiles.exists():
             # Posts des eingeloggten Benutzers abrufen und nach Erstellungsdatum sortieren
             posts = Post.objects.filter(poster__in=profile.subscribed.all()).order_by('-date')
-            liked_posts = profile.liked_posts.all()
         else:
             # Zufällige Posts abrufen, sortiert nach absteigendem Erstellungsdatum
             # Auf maximal 100 Posts pro Tag begrenzen
@@ -45,7 +46,8 @@ def home(request):
 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    return render(request, 'posts/home.html', {'page_obj': page_obj, 'liked_posts': liked_posts})
+    return render(request, 'posts/home.html', {'page_obj': page_obj, 'liked_posts': liked_posts,
+                                               'comment_form': comment_form})
 
 
 @login_required()
@@ -113,15 +115,15 @@ def search(request, query):
             profiles = Profile.objects.all()
         else:
             profiles = Profile.objects.filter(user__username__icontains=query)
-        #posts = Post.objects.filter(caption__icontains=query)
+        # posts = Post.objects.filter(caption__icontains=query)
         return render(request, 'posts/search.html', {'profiles': profiles, 'query': query})
 
-    
+
 def profile(request, user_id):
-    profile = Profile.objects.get(pk=user_id)
-    print(profile)
-    user_posts_list = Post.objects.filter(poster=profile).order_by('-date')
-    paginator = Paginator(user_posts_list, 10) # Show 10 posts per page
+    user = get_object_or_404(Profile, pk=user_id)
+    print(user)
+    user_posts_list = Post.objects.filter(poster=user).order_by('-date')
+    paginator = Paginator(user_posts_list, 10)  # Show 10 posts per page
 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -167,3 +169,28 @@ def unsub_s_profile(request, user_id, query):
     user.save()
 
     return search(request, query)
+
+@login_required
+def comment(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    comments = Comment.objects.filter(post=post)
+    if request.method == 'POST':
+        print("POST IST ANGEKOMMEN")
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            print("FORM IST VALID")
+            new_comment = comment_form.save(commit=False)
+            new_comment.post = post
+            new_comment.commenter = request.user.profile
+            new_comment.save()
+            return JsonResponse({
+                'success': True,
+                'comment': {
+                    'commenter_username': new_comment.commenter.user.username,
+                    'commenter_profile_picture': new_comment.commenter.profile_picture.url,
+                    'text': new_comment.text,
+                    'comment_likes_count': new_comment.comment_likes.count(),
+                }
+            })
+    else:
+        return HttpResponseRedirect('/')

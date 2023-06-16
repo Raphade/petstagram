@@ -1,79 +1,92 @@
 {% extends "posts/base.html" %}
 {% block content %}
-    <div class="container">
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <div class="post-container">
-                    {% include "blocks/block-posts.html" with user_posts=page_obj %}
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <div class="pagination">
-                    {% if page_obj.has_previous %}
-                        <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
-                    {% endif %}
-                    <span class="current-page">{{ page_obj.number }}</span>
-                    {% if page_obj.has_next %}
-                        <a href="?page={{ page_obj.next_page_number }}">Next</a>
-                    {% endif %}
-                </div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="post-container">
+                {% include "blocks/block-posts.html" with user_posts=page_obj %}
             </div>
         </div>
     </div>
-    <div id="myModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <div class="post-details">
-                <div class="post-image">
-                    <img src="{{ post.media.url }}" alt="Post Image">
-                </div>
-                <div class="post-info">
-                    <div class="poster-info">
-                        <img class="profile-picture" src="{{ post.poster.profile_picture.url }}" alt="Profile Picture">
-                        <h5>{{ post.poster.username }}</h5>
-                    </div>
-                    <div class="comments-section">
-                        {% for comment in post.comment_set.all %}
-                            <div class="comment">
-                                <div class="commenter-info">
-                                    <img class="profile-picture" src="{{ comment.commenter.profile_picture.url }}" alt="Profile Picture">
-                                    <h6>{{ comment.commenter.username }}</h6>
-                                </div>
-                                <div class="comment-text">
-                                    <p>{{ comment.text }}</p>
-                                </div>
-                                <div class="comment-likes">
-                                    <i class="fas fa-heart"></i> {{ comment.comment_likes.count }}
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-            <div class="actions">
-                <div class="post-comment">
-                    <i class="fas fa-regular fa-comment comment-button"></i>
-                </div>
-                <div class="post-likes">
-                    {% if user.is_authenticated %}
-                        <i class="fas fa-heart like-button {% if post in liked_posts %} liked{% endif %}" data-post-id="{{ post.id }}"></i>
-                    {% else %}
-                        <i class="fas fa-heart like-button" onclick="showAlert()"></i>
-                    {% endif %}
-                    {{ post.post_likes.count }}
-                </div>
-                <div class="comment-input">
-                    <input type="text" placeholder="Add a comment...">
-                    <button class="comment-on-post">Post</button>
-                </div>
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="pagination">
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                {% endif %}
+                <span class="current-page">{{ page_obj.number }}</span>
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">Next</a>
+                {% endif %}
             </div>
         </div>
     </div>
+</div>
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="post-details">
+            <div class="post-image">
+                <img src="{{ post.media.url }}" alt="Post Image">
+            </div>
+            <div class="post-info">
+                <div class="poster-info">
+                    <img class="profile-picture" src="{{ post.poster.profile_picture.url }}" alt="Profile Picture">
+                    <h5>{{ post.poster.username }}</h5>
+                </div>
+                <div class="comments-section">
+                    {% for comment in post.comment_set.all %}
+                    <div class="comment">
+                        <div class="commenter-info">
+                            <img class="profile-picture" src="{{ comment.commenter.profile_picture.url }}"
+                                 alt="Profile Picture">
+                            <h6>{{ comment.commenter.username }}</h6>
+                        </div>
+                        <div class="comment-text">
+                            <p>{{ comment.text }}</p>
+                        </div>
+                        <div class="comment-likes">
+                            <i class="fas fa-heart"></i> {{ comment.comment_likes.count }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="actions">
+            <div class="post-comment">
+                <i class="fas fa-regular fa-comment comment-button"></i>
+            </div>
+            <div class="post-likes">
+                {% if user.is_authenticated %}
+                <i class="fas fa-heart like-button {% if post in liked_posts %} liked{% endif %}"
+                   data-post-id="{{ post.id }}"></i>
+                {% else %}
+                <i class="fas fa-heart like-button" onclick="showAlert()"></i>
+                {% endif %}
+                {{ post.post_likes.count }}
+            </div>
+            {% if user.is_authenticated %}
+            <div class="comment-input">
+                <form id="comment-form" method="post"
+                      action="">
+                    {% csrf_token %}
+                    {{ comment_form }}
+                    <button type="submit" class="comment-on-post">Post</button>
+                </form>
+            </div>
+            {% else %}
+            <div class="comment-input">
+                <input type="text" placeholder="You must be logged in to add a comment...">
+                <button type="submit" class="comment-on-post">Post</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 
-    <script>
-        $(document).ready(function() {
+<script>
+        $(document).ready(function () {
             // read CSRF-Token from Cookie
             function getCookie(name) {
                 let cookieValue = null;
@@ -92,7 +105,7 @@
 
             let csrftoken = getCookie('csrftoken');
 
-            $('.like-button').click(function() {
+            $('.like-button').click(function () {
                 let postId = $(this).data('post-id');
                 let url = '/posts/' + postId + '/like/';
                 let $heart = $(this);
@@ -106,16 +119,16 @@
                         data: {
                             csrfmiddlewaretoken: csrftoken
                         },
-                        beforeSend: function(xhr, settings) {
+                        beforeSend: function (xhr, settings) {
                             xhr.setRequestHeader("X-CSRFToken", csrftoken);
                         },
-                        success: function(data) {
+                        success: function (data) {
                             if (data.message === 'Post unliked.') {
                                 $heart.removeClass('liked');
                                 $heart.css('color', 'black'); // // Change color
                             }
                         },
-                        error: function(xhr, textStatus, error) {
+                        error: function (xhr, textStatus, error) {
                             console.log(xhr.responseText);
                         }
                     });
@@ -128,23 +141,23 @@
                         data: {
                             csrfmiddlewaretoken: csrftoken
                         },
-                        beforeSend: function(xhr, settings) {
+                        beforeSend: function (xhr, settings) {
                             xhr.setRequestHeader("X-CSRFToken", csrftoken);
                         },
-                        success: function(data) {
+                        success: function (data) {
                             if (data.message === 'Post liked.') {
                                 $heart.addClass('liked');
                                 $heart.css('color', 'red'); // Change color
                             }
                         },
-                        error: function(xhr, textStatus, error) {
+                        error: function (xhr, textStatus, error) {
                             console.log(xhr.responseText);
                         }
                     });
                 }
             });
 
-            $('.comment-button').click(function() {
+            $('.comment-button').click(function () {
                 let postId = $(this).data('post-id');
                 let url = '/posts/' + postId + '/';
 
@@ -153,10 +166,10 @@
                     url: url,
                     type: 'GET',
                     dataType: 'json',
-                    beforeSend: function(xhr, settings) {
+                    beforeSend: function (xhr, settings) {
                         xhr.setRequestHeader("X-CSRFToken", csrftoken);
                     },
-                    success: function(data) {
+                    success: function (data) {
                         // Post-Daten und Kommentar-Daten aus der AJAX-Antwort extrahieren
                         let post = data.post;
                         let comments = post.comments;
@@ -178,7 +191,7 @@
                             let commentHtml = '<div class="comment">' +
                                 '<div class="commenter-info">' +
                                 '<img class="profile-picture" src="' + comment.commenter_profile_picture + '" alt="Profile Picture">' +
-                                '<h5>' + comment.commenter_username + '</h5>' +
+                                '<h6>' + comment.commenter_username + '</h6>' +
                                 '</div>' +
                                 '<div class="comment-text">' +
                                 '<p>' + comment.text + '</p>' +
@@ -190,18 +203,63 @@
                             commentsSection.append(commentHtml);
                         }
 
+                        // Aktualisiere das data-post-id-Attribut im Formular-Button
+                        $('#comment-form .comment-on-post').data('post-id', postId);
+
                         // Modal anzeigen
                         $('#myModal').modal('show');
                         let closeIcon = document.getElementsByClassName("close")[0];
-                        closeIcon.onclick = function() {
-                          $('#myModal').modal('hide');
+                        closeIcon.onclick = function () {
+                            $('#myModal').modal('hide');
                         }
                     },
-                    error: function(xhr, textStatus, error) {
+                    error: function (xhr, textStatus, error) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+
+            $('#comment-form').submit(function (event) {
+                event.preventDefault();
+                let postId = $(this).find('.comment-on-post').data('post-id');
+                let url = '/posts/' + postId + '/comment/';
+                let commentForm = $(this);
+
+                // AJAX-Anfrage, um den Kommentar zu erstellen
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: commentForm.serialize(),
+                    success: function (data) {
+                        if (data.success) {
+                            // Neuen Kommentar zum Modal hinzufügen
+                            let comment = data.comment;
+                            let commentHtml = '<div class="comment">' +
+                                '<div class="commenter-info">' +
+                                '<img class="profile-picture" src="' + comment.commenter_profile_picture + '" alt="Profile Picture">' +
+                                '<h6>' + comment.commenter_username + '</h6>' +
+                                '</div>' +
+                                '<div class="comment-text">' +
+                                '<p>' + comment.text + '</p>' +
+                                '</div>' +
+                                '<div class="comment-likes">' +
+                                '<i class="fas fa-heart"></i> ' + comment.comment_likes_count +
+                                '</div>' +
+                                '</div>';
+                            $('.comments-section').append(commentHtml);
+
+                            // Zurücksetzen des Kommentarformulars
+                            commentForm[0].reset();
+                        }
+                    },
+                    error: function (xhr, textStatus, error) {
                         console.log(xhr.responseText);
                     }
                 });
             });
         });
-    </script>
+
+
+</script>
 {% endblock %}

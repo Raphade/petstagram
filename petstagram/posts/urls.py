@@ -13,4 +13,5 @@ urlpatterns = [
     path('unsub_profile/<int:user_id>/', views.unsub_profile, name='unsubscribe-profile'),
     path('sub_profile/<int:user_id>/<str:query>', views.sub_s_profile, name='subscribe-search-profile'),
     path('unsub_profile/<int:user_id>/<str:query>', views.unsub_s_profile, name='unsubscribe-search-profile'),
+    path('posts/<int:post_id>/comment/', views.comment, name='comment-post'),
 ]

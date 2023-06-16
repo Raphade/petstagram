@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Post
+from .models import Post, Comment
 
 
 class PostForm(forms.ModelForm):
@@ -14,7 +14,7 @@ class PostForm(forms.ModelForm):
     media = forms.ImageField(widget=forms.FileInput(attrs={
         'class': 'form-control mb-3 file-input',
         'id': 'image-upload',
-        'accept':'image/*',
+        'accept': 'image/*',
         'onchange': 'previewImage(event)',
         'style': '',
         'placeholder': 'Image',
@@ -24,3 +24,14 @@ class PostForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = ('description', 'media')
+
+
+class CommentForm(forms.ModelForm):
+    text = forms.CharField(widget=forms.Textarea(attrs={
+        'placeholder': 'Add a comment...',
+        'required': 'true',
+    }))
+
+    class Meta:
+        model = Comment
+        fields = ['text']
