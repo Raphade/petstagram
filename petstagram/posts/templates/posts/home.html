@@ -35,25 +35,24 @@
                         <h5>{{ post.poster.username }}</h5>
                     </div>
                     <div class="comments-section">
-                        {% with most_liked_comments=comments|dictsort:'-comment_likes.count' %}
-                            {% for comment in most_liked_comments %}
-                                <div class="comment">
-                                    <div class="commenter-info">
-                                        <img class="profile-picture"
-                                             src="{{ comment.commenter.profile_picture.url }}"
-                                             alt="Profile Picture">
-                                        <h6>{{ comment.commenter.username }}</h6>
-                                    </div>
-                                    <div class="comment-text">
-                                        <p>{{ comment.text }}</p>
-                                    </div>
-                                    <div class="comment-likes">
-                                        <i class="fas fa-heart like-button comment-like-button" data-id="{{ comment.id }}" data-post-id="{{ post.id }}"></i>
-                                        <span>{{ comment.comment_likes.count }}</span>
-                                    </div>
+                        {% for comment in comments %}
+                            <div class="comment">
+                                <div class="commenter-info">
+                                    <img class="profile-picture"
+                                         src="{{ comment.commenter.profile_picture.url }}"
+                                         alt="Profile Picture">
+                                    <h6>{{ comment.commenter.username }}</h6>
                                 </div>
-                            {% endfor %}
-                        {% endwith %}
+                                <div class="comment-text">
+                                    <p>{{ comment.text }}</p>
+                                </div>
+                                <div class="comment-likes">
+                                    <i class="fas fa-heart like-button comment-like-button"
+                                       data-id="{{ comment.id }}" data-post-id="{{ post.id }}"></i>
+                                    <span class="likecounter">{{ comment.comment_likes.count }}</span>
+                                </div>
+                            </div>
+                        {% endfor %}
                     </div>
                     <div class="modal-bottom">
                         <div class="actions">
@@ -63,7 +62,7 @@
                                 </div>
                                 <div class="post-likes">
                                     {% if user.is_authenticated %}
-                                        <i class="fas fa-heart like-button {% if post in liked_posts %} liked{% endif %}"
+                                        <i class="fas fa-heart like-button post-like-button {% if post in liked_posts %} liked{% endif %}"
                                            data-id="{{ post.id }}"></i>
                                     {% else %}
                                         <i class="fas fa-heart like-button" onclick="showAlert()"></i>
@@ -117,7 +116,7 @@
 
             let csrftoken = getCookie('csrftoken');
 
-            $('.like-button').click(function () {
+            $(document).on('click', '.like-button', function () {
                 console.log("FUNCTION TRIGGERED")
                 let item_id = $(this).data('id');
                 let url = '';
@@ -224,10 +223,15 @@
                                 '<p>' + comment.text + '</p>' +
                                 '</div>' +
                                 '</div>' +
-                                '<div class="comment-likes">' +
-                                '<i class="fas fa-heart like-button comment-like-button" data-id="' + comment.comment_id + '" data-post-id="' + post.post_id + '"></i> ' +
-                                '<span class="likecounter">' +
-                                '</span>' +
+                                '<div class="comment-likes">';
+
+                            if (comment.comment_liked) {
+                                commentHtml += '<i class="fas fa-heart like-button comment-like-button liked" data-id="' + comment.comment_id + '" data-post-id="' + post.post_id + '"></i> ';
+                            } else {
+                                commentHtml += '<i class="fas fa-heart like-button comment-like-button" data-id="' + comment.comment_id + '" data-post-id="' + post.post_id + '"></i> ';
+                            }
+
+                            commentHtml += '<span class="likecounter">' + comment.comment_likes_count + '</span>' +
                                 '</div>' +
                                 '</div>';
                             commentsSection.append(commentHtml);

@@ -86,10 +86,12 @@ def get_post(request, post_id):
         comments = post.comment_set.all()
         comments_user = comments.filter(commenter=request.user.profile).order_by('-comment_likes', 'date')
         comments_all = comments.exclude(commenter=request.user.profile)
-        comments_all = comments_all.order_by('-comment_likes', 'date')
+        comments_all = comments_all.order_by('comment_likes', '-date')
         comments_req = list(comments_user) + list(comments_all)
         comments_data = []
+
         for comment in comments_req:
+            comment_liked = comment.comment_likes.filter(id=request.user.profile.id).exists()
             comment_data = {
                 'comment_id': comment.id,
                 'commenter_profile_picture': comment.commenter.profile_picture.url,
@@ -97,6 +99,7 @@ def get_post(request, post_id):
                 'text': comment.text,
                 'comment_likes_count': comment.comment_likes.count(),
                 'comment_date': comment.date,
+                'comment_liked': comment_liked,
             }
             comments_data.append(comment_data)
         post_data = {

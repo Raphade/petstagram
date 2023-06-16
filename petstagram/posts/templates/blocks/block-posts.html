@@ -20,7 +20,7 @@
             {% else %}
                 <i class="fas fa-heart post-like-button like-button" onclick="showAlert()"></i>
             {% endif %}
-            {{ post.post_likes.count }}
+            <span class="likecounter">{{ post.post_likes.count }}</span>
         </div>
         <div class="post-date">
             {{ post.date }}
