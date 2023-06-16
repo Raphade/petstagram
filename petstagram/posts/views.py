@@ -57,10 +57,25 @@ def like_post(request, post_id):
         user_profile = request.user.profile
         if user_profile in post.post_likes.all():
             post.post_likes.remove(user_profile)
-            message = 'Post unliked.'
+            message = 'unliked.'
         else:
             post.post_likes.add(user_profile)
-            message = 'Post liked.'
+            message = 'liked.'
+        return JsonResponse({'message': message})
+    return JsonResponse({'message': 'Invalid request.'})
+
+
+@login_required()
+def like_comment(request, post_id, comment_id):
+    if request.method == 'POST' and request.user.is_authenticated:
+        comment = get_object_or_404(Comment, id=comment_id, post_id=post_id)
+        user_profile = request.user.profile
+        if user_profile in comment.comment_likes.all():
+            comment.comment_likes.remove(user_profile)
+            message = 'unliked.'
+        else:
+            comment.comment_likes.add(user_profile)
+            message = 'liked.'
         return JsonResponse({'message': message})
     return JsonResponse({'message': 'Invalid request.'})
 
@@ -69,16 +84,23 @@ def get_post(request, post_id):
     if request.method == 'GET':
         post = get_object_or_404(Post, id=post_id)
         comments = post.comment_set.all()
+        comments_user = comments.filter(commenter=request.user.profile).order_by('-comment_likes', 'date')
+        comments_all = comments.exclude(commenter=request.user.profile)
+        comments_all = comments_all.order_by('-comment_likes', 'date')
+        comments_req = list(comments_user) + list(comments_all)
         comments_data = []
-        for comment in comments:
+        for comment in comments_req:
             comment_data = {
+                'comment_id': comment.id,
                 'commenter_profile_picture': comment.commenter.profile_picture.url,
                 'commenter_username': comment.commenter.user.username,
                 'text': comment.text,
                 'comment_likes_count': comment.comment_likes.count(),
+                'comment_date': comment.date,
             }
             comments_data.append(comment_data)
         post_data = {
+            'post_id': post.id,
             'media': post.media.url,
             'poster_profile_picture': post.poster.profile_picture.url,
             'poster_username': post.poster.user.username,

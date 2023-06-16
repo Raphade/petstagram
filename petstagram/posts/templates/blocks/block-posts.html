@@ -16,9 +16,9 @@
         </div>
         <div class="post-likes">
             {% if user.is_authenticated %}
-                <i class="fas fa-heart like-button {% if post in liked_posts %} liked{% endif %}" data-post-id="{{ post.id }}"></i>
+                <i class="fas fa-heart post-like-button like-button {% if post in liked_posts %} liked{% endif %}" data-id="{{ post.id }}"></i>
             {% else %}
-                <i class="fas fa-heart like-button" onclick="showAlert()"></i>
+                <i class="fas fa-heart post-like-button like-button" onclick="showAlert()"></i>
             {% endif %}
             {{ post.post_likes.count }}
         </div>
@@ -27,7 +27,8 @@
         </div>
     </div>
     <div class="post-comments">
-        {% for comment in post.comment_set.all %}
+        {% with most_liked_comment=comments|dictsort:'-comment_likes.count'|first %}
+        {% if most_liked_comment %}
             <div class="comment">
                 <div class="commenter">
                     <img class="profile-picture" src="{{ comment.commenter.profile_picture.url }}" alt="Profile Picture">
@@ -37,10 +38,12 @@
                     <p>{{ comment.text }}</p>
                 </div>
                 <div class="comment-likes">
-                    <i class="fas fa-heart"></i> {{ comment.comment_likes.count }}
+                    <i class="fas fa-heart like-button comment-like-button" data-id="{{ most_liked_comment.id }}" data-post-id="{{ post.id }}"></i>
+                    <span>{{ most_liked_comment.comment_likes.count }}</span>
                 </div>
             </div>
-        {% endfor %}
+        {% endif %}
+    {% endwith %}
     </div>
 </div>
 {% empty %}

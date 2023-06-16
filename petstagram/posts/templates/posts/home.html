@@ -35,22 +35,25 @@
                         <h5>{{ post.poster.username }}</h5>
                     </div>
                     <div class="comments-section">
-                        {% for comment in post.comment_set.all %}
-                            <div class="comment">
-                                <div class="commenter-info">
-                                    <img class="profile-picture" src="{{ comment.commenter.profile_picture.url }}"
-                                         alt="Profile Picture">
-                                    <h6>{{ comment.commenter.username }}</h6>
+                        {% with most_liked_comments=comments|dictsort:'-comment_likes.count' %}
+                            {% for comment in most_liked_comments %}
+                                <div class="comment">
+                                    <div class="commenter-info">
+                                        <img class="profile-picture"
+                                             src="{{ comment.commenter.profile_picture.url }}"
+                                             alt="Profile Picture">
+                                        <h6>{{ comment.commenter.username }}</h6>
+                                    </div>
+                                    <div class="comment-text">
+                                        <p>{{ comment.text }}</p>
+                                    </div>
+                                    <div class="comment-likes">
+                                        <i class="fas fa-heart like-button comment-like-button" data-id="{{ comment.id }}" data-post-id="{{ post.id }}"></i>
+                                        <span>{{ comment.comment_likes.count }}</span>
+                                    </div>
                                 </div>
-                                <div class="comment-text">
-                                    <p>{{ comment.text }}</p>
-                                </div>
-                                <div class="comment-likes">
-                                    <i class="fas fa-heart"></i>
-                                    <span>{{ comment.comment_likes.count }}</span>
-                                </div>
-                            </div>
-                        {% endfor %}
+                            {% endfor %}
+                        {% endwith %}
                     </div>
                     <div class="modal-bottom">
                         <div class="actions">
@@ -61,11 +64,11 @@
                                 <div class="post-likes">
                                     {% if user.is_authenticated %}
                                         <i class="fas fa-heart like-button {% if post in liked_posts %} liked{% endif %}"
-                                           data-post-id="{{ post.id }}"></i>
+                                           data-id="{{ post.id }}"></i>
                                     {% else %}
                                         <i class="fas fa-heart like-button" onclick="showAlert()"></i>
                                     {% endif %}
-                                    <span id="likecounts">
+                                    <span class="likecounter">
                                         {{ post.post_likes.count }}
                                     </span>
                                 </div>
@@ -115,8 +118,17 @@
             let csrftoken = getCookie('csrftoken');
 
             $('.like-button').click(function () {
-                let postId = $(this).data('post-id');
-                let url = '/posts/' + postId + '/like/';
+                console.log("FUNCTION TRIGGERED")
+                let item_id = $(this).data('id');
+                let url = '';
+
+                if ($(this).hasClass('post-like-button')) {
+                    url = '/posts/' + item_id + '/like/';
+                } else if ($(this).hasClass('comment-like-button')) {
+                    let post_id = $(this).data('post-id');
+                    url = '/posts/' + post_id + '/comment/' + item_id + '/like/';
+                }
+                console.log(url)
                 let $heart = $(this);
                 if ($heart.hasClass('liked')) {
                     // delete Like
@@ -131,11 +143,11 @@
                             xhr.setRequestHeader("X-CSRFToken", csrftoken);
                         },
                         success: function (data) {
-                            if (data.message === 'Post unliked.') {
+                            if (data.message === 'unliked.') {
                                 $heart.removeClass('liked');
-                                var currentLikes = parseInt($("#likecounter").text());
+                                var currentLikes = parseInt($heart.siblings('.likecounter').text());
                                 var newLikes = currentLikes - 1;
-                                $("#likecounter").text(newLikes);
+                                $heart.siblings('.likecounter').text(newLikes);
 
                             }
                         },
@@ -156,11 +168,11 @@
                             xhr.setRequestHeader("X-CSRFToken", csrftoken);
                         },
                         success: function (data) {
-                            if (data.message === 'Post liked.') {
+                            if (data.message === 'liked.') {
                                 $heart.addClass('liked');
-                                var currentLikes = parseInt($("#likecounter").text());
+                                var currentLikes = parseInt($heart.siblings('.likecounter').text());
                                 var newLikes = currentLikes + 1;
-                                $("#likecounter").text(newLikes);
+                                $heart.siblings('.likecounter').text(newLikes);
                             }
                         },
                         error: function (xhr, textStatus, error) {
@@ -213,7 +225,9 @@
                                 '</div>' +
                                 '</div>' +
                                 '<div class="comment-likes">' +
-                                '<i class="fas fa-heart"></i> ' + comment.comment_likes_count +
+                                '<i class="fas fa-heart like-button comment-like-button" data-id="' + comment.comment_id + '" data-post-id="' + post.post_id + '"></i> ' +
+                                '<span class="likecounter">' +
+                                '</span>' +
                                 '</div>' +
                                 '</div>';
                             commentsSection.append(commentHtml);

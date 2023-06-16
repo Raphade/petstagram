@@ -19,4 +19,4 @@ class Comment(models.Model):
     commenter = models.ForeignKey(Profile, on_delete=models.CASCADE)
     comment_likes = models.ManyToManyField(Profile, related_name='liked_comments')
     text = models.CharField(max_length=100, null=True, blank=True)
-    date = models.DateTimeField(null=True)
+    date = models.DateTimeField(null=True, default=timezone.now())
