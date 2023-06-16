@@ -1,5 +1,5 @@
 from django.db import models
-from users.models import Profile
+from users_pet.models import Profile
 from django.utils import timezone
 
 def user_directory_path(instance, filename):
