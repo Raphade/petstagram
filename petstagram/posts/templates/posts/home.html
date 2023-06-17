@@ -75,7 +75,7 @@
                         </div>
                         {% if user.is_authenticated %}
                             <div class="mdl-comment-bottom">
-                                <form id="comment-form" method="post" class=".mdl-comments"
+                                <form id="comment-form" method="post" class="mdl-comments"
                                       action="">
                                     {% csrf_token %}
                                     {{ comment_form }}

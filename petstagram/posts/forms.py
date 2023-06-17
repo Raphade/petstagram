@@ -33,7 +33,7 @@ class CommentForm(forms.ModelForm):
         'class': 'mdl-comment-input',
         'row': '5',
         'cols': '40',
-    }))
+    }), label='')
 
     class Meta:
         model = Comment
