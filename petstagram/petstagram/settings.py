@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 from google.oauth2 import service_account
 from django.core.files.storage import default_storage
+import crispy_forms
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
