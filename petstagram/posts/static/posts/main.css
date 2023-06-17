@@ -105,10 +105,9 @@ a.article-title:hover {
 
 .profile-picture {
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-    margin: 1%;
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
 }
 
 /* Stil für den Post-Bildbereich */
@@ -142,6 +141,9 @@ a.article-title:hover {
 .post-likes {
     font-size: 14px;
 }
+.liked {
+    color: red;
+}
 
 .post-comment {
     margin-right: 20px;
@@ -155,7 +157,6 @@ a.article-title:hover {
 .comment {
     margin-bottom: 10px;
     padding: 5px;
-    border: 1px solid #ccc;
 }
 
 .commenter {
@@ -172,21 +173,34 @@ a.article-title:hover {
 }
 
 .comment-text {
-    margin-bottom: 5px;
+  margin-left: 10px;
 }
 
 .comment-likes {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
     font-size: 12px;
 }
 
-.like-button {
+.post-like-button {
     font-size: 30px;
     transition: transform 0.3s, opacity 0.3s;
 }
 
-.like-button:hover {
+.comment-like-button {
+    font-size: 15px;
+    transition: transform 0.3s, opacity 0.3s;
+}
+
+.post-like-button:hover {
     transform: scale(1.3);
     opacity: 0.7;
+}
+
+.comment-like-button:hover {
+    transform: scale(1.2);
+    opacity: 0.6;
 }
 
 .comment-button {
@@ -239,12 +253,19 @@ a.article-title:hover {
 
 .comments-section {
     margin-top: 10px;
+    border-top: 1px solid #ccc;
+    width: 100%;
 }
 
-.comment {
+/*.comment {
     display: flex;
     align-items: center;
     margin-bottom: 10px;
+}*/
+.comment {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 10px;
 }
 
 .commenter-info {
@@ -259,10 +280,14 @@ a.article-title:hover {
     margin-right: 10px;
 }
 
+.commenter-details {
+  display: flex;
+  flex-direction: column;
+}
+
 .like-button,
 .comment-button {
     display: inline-block;
-    margin-right: 10px;
     cursor: pointer;
 }
 
@@ -368,6 +393,8 @@ a.article-title:hover {
     align-self: flex-start;
     position: relative;
     overflow: hidden;
+    max-height: 96%;
+
     }
 
 .mdl-post-info {
@@ -377,7 +404,8 @@ a.article-title:hover {
     align-items: flex-start;
     padding: 10px;
     height: 100%;
-    flex: 2;
+    max-height: 96%;
+
 }
 
 .mdl-post-details {
@@ -389,7 +417,7 @@ a.article-title:hover {
     display: flex;
     align-items: center;
     margin-bottom: 10px;
-    margin-top: auto;
+    margin-top: 10px;
     width: -moz-available;
 }
 
@@ -397,32 +425,42 @@ a.article-title:hover {
     display: flex;
     align-items: center;
     margin-bottom: 10px;
-    margin-top: auto;
+    margin-top: 10px;
     width: -moz-available;
 }
-
+.mdl-comment-bottom {
+    height: 75px;
+    /*overflow-y: auto;*/
+    padding: 5px;
+    border-top: 1px solid #ccc;
+    display: flex;
+    justify-content: space-between;
+}
 .mdl-comment-input {
+    /*height: 40px;*/
+
     height: 100%;
     resize: none;
     overflow-y: auto;
-    flex: 1;
-    margin-right: 5px;
-    padding: 5px;
+    width: 90%;
 }
 
-.mdl-comment-on-post{
+.comment-on-post{
+    height: 40px;
     background-color: #3897f0;
     color: #fff;
     border: none;
+    margin-left: 5px;
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
 }
 
 .mdl-poster-info{
+    width: 100%;
     display: flex;
     align-items: center;
-    margin-left: 10px;
+    margin-right: 10px;
 }
 
 .mdl-post-description {
@@ -467,12 +505,46 @@ a.article-title:hover {
 }
 
 .actions {
+    width: 100%;
     display: flex;
+    align-items: flex-start;
+    width: -moz-available;
+    border-top: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-bottom {
+/*
+    position: absolute;
+    bottom: 0;
+    z-index: 3;
+*/
+
     align-items: center;
     margin-bottom: 10px;
     margin-top: auto;
     width: -moz-available;
-
-    display: flex;
-    flex-direction: column;
 }
+
+
+.mdl-comment-bottom label[for="id_text"] {
+    display: inline-block;
+
+}
+/*
+@media (max-width: 768px) {
+    .modal-content {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .mdl-post-image,
+    .mdl-post-info {
+        width: 100%;
+    }
+
+    .mdl-post-image {
+        height: auto;
+    }
+}*/

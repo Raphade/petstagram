@@ -5,6 +5,7 @@ urlpatterns = [
     path('', views.home, name='posts-home'),
     path('about/', views.about, name='posts-about'),
     path('posts/<int:post_id>/like/', views.like_post, name='like-post'),
+    path('posts/<int:post_id>/comment/<int:comment_id>/like/', views.like_comment, name='like-comment'),
     path('posts/<int:post_id>/', views.get_post, name='get-post'),
     path('posts/', views.create_post, name='create-post'),
     path('search/<str:query>/', views.search, name='search-profiles'),

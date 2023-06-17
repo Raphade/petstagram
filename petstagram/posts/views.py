@@ -57,10 +57,25 @@ def like_post(request, post_id):
         user_profile = request.user.profile
         if user_profile in post.post_likes.all():
             post.post_likes.remove(user_profile)
-            message = 'Post unliked.'
+            message = 'unliked.'
         else:
             post.post_likes.add(user_profile)
-            message = 'Post liked.'
+            message = 'liked.'
+        return JsonResponse({'message': message})
+    return JsonResponse({'message': 'Invalid request.'})
+
+
+@login_required()
+def like_comment(request, post_id, comment_id):
+    if request.method == 'POST' and request.user.is_authenticated:
+        comment = get_object_or_404(Comment, id=comment_id, post_id=post_id)
+        user_profile = request.user.profile
+        if user_profile in comment.comment_likes.all():
+            comment.comment_likes.remove(user_profile)
+            message = 'unliked.'
+        else:
+            comment.comment_likes.add(user_profile)
+            message = 'liked.'
         return JsonResponse({'message': message})
     return JsonResponse({'message': 'Invalid request.'})
 
@@ -69,20 +84,41 @@ def get_post(request, post_id):
     if request.method == 'GET':
         post = get_object_or_404(Post, id=post_id)
         comments = post.comment_set.all()
+        comments_user =[]
+        like_post=False
+        if request.user.is_authenticated:
+            profile = get_object_or_404(Profile, user=request.user)
+            if post in profile.liked_posts.all():
+                like_post = True
+            comments_user = comments.filter(commenter=request.user.profile).order_by('-comment_likes', 'date')
+            comments_all = comments.exclude(commenter=request.user.profile)
+
+        else:
+            comments_all = comments
+        comments_all = comments_all.order_by('comment_likes', '-date')
+        comments_req = list(comments_user) + list(comments_all)
         comments_data = []
-        for comment in comments:
+
+        for comment in comments_req:
+            comment_liked = comment.comment_likes.filter(id=request.user.profile.id).exists()
             comment_data = {
+                'comment_id': comment.id,
                 'commenter_profile_picture': comment.commenter.profile_picture.url,
                 'commenter_username': comment.commenter.user.username,
                 'text': comment.text,
                 'comment_likes_count': comment.comment_likes.count(),
+                'comment_date': comment.date,
+                'comment_liked': comment_liked,
             }
             comments_data.append(comment_data)
         post_data = {
+            'post_id': post.id,
             'media': post.media.url,
             'poster_profile_picture': post.poster.profile_picture.url,
             'poster_username': post.poster.user.username,
             'comments': comments_data,
+            'liked_posts': like_post,
+            'post_likes': post.post_likes.count(),
         }
         print(post.poster)
     return JsonResponse({'post': post_data})
@@ -132,7 +168,33 @@ def profile(request, user_id):
         'user': profile,
         'user_posts': page_obj,
     }
-    return render(request, 'posts/profile.html', {'profile': profile, 'user_posts': page_obj})
+    return render(request, 'posts/profile.html', {'user': user, 'user_posts': page_obj})
+
+
+@login_required
+def comment(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    comments = Comment.objects.filter(post=post)
+    if request.method == 'POST':
+        print("POST IST ANGEKOMMEN")
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            print("FORM IST VALID")
+            new_comment = comment_form.save(commit=False)
+            new_comment.post = post
+            new_comment.commenter = request.user.profile
+            new_comment.save()
+            return JsonResponse({
+                'success': True,
+                'comment': {
+                    'commenter_username': new_comment.commenter.user.username,
+                    'commenter_profile_picture': new_comment.commenter.profile_picture.url,
+                    'text': new_comment.text,
+                    'comment_likes_count': new_comment.comment_likes.count(),
+                }
+            })
+    else:
+        return HttpResponseRedirect('/')
 
 @login_required()
 def sub_profile(request, user_id):
@@ -142,6 +204,7 @@ def sub_profile(request, user_id):
     user.save()
 
     return profile(request, user_id)
+
 @login_required()
 def unsub_profile(request, user_id):
     user = Profile.objects.get(pk=request.user.id)

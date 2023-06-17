@@ -5,8 +5,8 @@ provider "google" {
     zone = "europe-west3-b"
 }
 
-module "webserver" {
-  source = "./webserver"
+module "petstagram" {
+  source = "./petstagram"
 }
 
 module "haproxy" {
