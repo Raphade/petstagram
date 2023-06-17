@@ -114,6 +114,7 @@ def get_post(request, post_id):
         post_data = {
             'post_id': post.id,
             'media': post.media.url,
+            'post_description':post.description,
             'poster_profile_picture': post.poster.profile_picture.url,
             'poster_username': post.poster.user.username,
             'comments': comments_data,

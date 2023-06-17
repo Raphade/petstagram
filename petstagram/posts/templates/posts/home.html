@@ -1,100 +1,108 @@
 {% extends "posts/base.html" %}
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <div class="post-container">
-                {% include "blocks/block-posts.html" with user_posts=page_obj %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="post-container">
+                    {% include "blocks/block-posts.html" with user_posts=page_obj %}
+                </div>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <div class="pagination">
-                {% if page_obj.has_previous %}
-                <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
-                {% endif %}
-                <span class="current-page">{{ page_obj.number }}</span>
-                {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}">Next</a>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
-<div id="myModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <div class="mdl-post-details">
-            <div class="mdl-post-image">
-                <img src="{{ post.media.url }}" alt="Post Image">
-            </div>
-            <div class="mdl-post-info d-none d-md-block">
-                <div class="mdl-poster-info">
-                    <img class="profile-picture" src="{{ post.poster.profile_picture.url }}" alt="Profile Picture">
-                    <h5>{{ post.poster.username }}</h5>
-                </div>
-                <div class="comments-section">
-                    {% for comment in comments %}
-                    <div class="comment">
-                        <div class="commenter-info">
-                            <img class="profile-picture"
-                                 src="{{ comment.commenter.profile_picture.url }}"
-                                 alt="Profile Picture">
-                            <h6>{{ comment.commenter.username }}</h6>
-                        </div>
-                        <div class="comment-text">
-                            <p>{{ comment.text }}</p>
-                        </div>
-                        <div class="comment-likes">
-                            <i class="fas fa-heart like-button comment-like-button"
-                               data-id="{{ comment.id }}" data-post-id="{{ post.id }}"></i>
-                            <span class="likecounter">{{ comment.comment_likes.count }}</span>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                <div class="modal-bottom">
-                    <div class="actions">
-                        <div class="mdl-like-comment">
-                            <div class="post-comment">
-                                <i class="fas fa-regular fa-comment comment-button"></i>
-                            </div>
-                            <div class="post-likes">
-                                {% if user.is_authenticated %}
-                                <i class="fas fa-heart post-like-button like-button {% if post in liked_posts %} liked{% endif %}"
-                                   data-id="{{ post.id }}"></i>
-                                {% else %}
-                                <i class="fas fa-heart post-like-button like-button" onclick="showAlert()"></i>
-                                {% endif %}
-                                <span class="likecounter">{{ post.post_likes.count }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    {% if user.is_authenticated %}
-                    <div class="mdl-comment-bottom">
-                        <form id="comment-form" method="post" class="mdl-comments"
-                              action="">
-                            {% csrf_token %}
-                            {{ comment_form }}
-                            <button type="submit" class="comment-on-post">Post</button>
-                        </form>
-                    </div>
-                    {% else %}
-                    <div class="mdl-comment-bottom">
-                        <input type="text" class="mdl-comment-input"
-                               placeholder="You must be logged in to add a comment...">
-                        <button type="submit" class="comment-on-post">Post</button>
-                    </div>
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="pagination">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    {% endif %}
+                    <span class="current-page">{{ page_obj.number }}</span>
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}">Next</a>
                     {% endif %}
                 </div>
             </div>
-
         </div>
     </div>
-</div>
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="mdl-post-details">
+                <div class="mdl-post-image">
+                    <img src="{{ post.media.url }}" alt="Post Image">
+                </div>
+                <div class="mdl-container-left d-none d-md-block">
+                    <div class="mdl-post">
+                        <div class="mdl-post-info">
+                            <div class="mdl-poster-info">
+                                <img class="mdl-profile-picture" src="{{ post.poster.profile_picture.url }}"
+                                     alt="Profile Picture">
+                                <h6>{{ post.poster.username }}</h6>
+                            </div>
+                            <div class="mdl-post-description">
+                                <p class="mdl-post-description-text">{{ post.description }}</p>
+                            </div>
+                        </div>
+                        <div class="comments-section">
+                            {% for comment in comments %}
+                                <div class="comment">
+                                    <div class="commenter-info">
+                                        <img class="profile-picture"
+                                             src="{{ comment.commenter.profile_picture.url }}"
+                                             alt="Profile Picture">
+                                        <h6>{{ comment.commenter.username }}</h6>
+                                    </div>
+                                    <div class="comment-text">
+                                        <p>{{ comment.text }}</p>
+                                    </div>
+                                    <div class="comment-likes">
+                                        <i class="fas fa-heart like-button comment-like-button"
+                                           data-id="{{ comment.id }}" data-post-id="{{ post.id }}"></i>
+                                        <span class="likecounter">{{ comment.comment_likes.count }}</span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="modal-bottom">
+                            <div class="actions">
+                                <div class="mdl-like-comment">
+                                    <div class="post-comment">
+                                        <i class="fas fa-regular fa-comment comment-button"></i>
+                                    </div>
+                                    <div class="post-likes">
+                                        {% if user.is_authenticated %}
+                                            <i class="fas fa-heart post-like-button like-button {% if post in liked_posts %} liked{% endif %}"
+                                               data-id="{{ post.id }}"></i>
+                                        {% else %}
+                                            <i class="fas fa-heart post-like-button like-button"
+                                               onclick="showAlert()"></i>
+                                        {% endif %}
+                                        <span class="likecounter">{{ post.post_likes.count }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if user.is_authenticated %}
+                                <div class="mdl-comment-bottom">
+                                    <form id="comment-form" method="post" class="mdl-comments"
+                                          action="">
+                                        {% csrf_token %}
+                                        {{ comment_form }}
+                                        <button type="submit" class="comment-on-post">Post</button>
+                                    </form>
+                                </div>
+                            {% else %}
+                                <div class="mdl-comment-bottom">
+                                    <input type="text" class="mdl-comment-input"
+                                           placeholder="You must be logged in to add a comment...">
+                                    <button type="submit" class="comment-on-post">Post</button>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<script>
+    <script>
         $(document).ready(function () {
             // read CSRF-Token from Cookie
             function getCookie(name) {
@@ -115,7 +123,6 @@
             let csrftoken = getCookie('csrftoken');
 
             $(document).on('click', '.like-button', function () {
-                console.log("FUNCTION TRIGGERED")
                 let item_id = $(this).data('id');
                 let url = '';
 
@@ -198,16 +205,18 @@
 
                         // Modal mit den abgerufenen Daten aktualisieren
                         let modalImage = $('.modal-content .mdl-post-image img');
-                        let posterProfilePicture = $('.modal-content .mdl-poster-info .profile-picture');
-                        let posterUsername = $('.modal-content .mdl-poster-info h5');
+                        let posterProfilePicture = $('.modal-content .mdl-poster-info .mdl-profile-picture');
+                        let posterUsername = $('.modal-content .mdl-poster-info h6');
                         let commentsSection = $('.modal-content .comments-section');
-                        let liked_posts = $('.post-like-button');
+                        let like_post_btn = $('.post-like-button');
                         let like_counter = $('.likecounter');
+                        let postDescription = $('.mdl-post-description-text');
 
-                        if(post.liked_posts){
-                            liked_posts.addClass("liked");
+                        if (post.liked_posts) {
+                            like_post_btn.addClass("liked");
                         }
-
+                        like_post_btn.attr("data-id",post.post_id);
+                        postDescription.text(post.post_description)
                         like_counter.text(post.post_likes);
 
                         modalImage.attr('src', post.media);
@@ -301,7 +310,5 @@
         });
 
 
-
-
-</script>
+    </script>
 {% endblock %}
