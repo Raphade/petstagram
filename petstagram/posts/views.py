@@ -84,8 +84,17 @@ def get_post(request, post_id):
     if request.method == 'GET':
         post = get_object_or_404(Post, id=post_id)
         comments = post.comment_set.all()
-        comments_user = comments.filter(commenter=request.user.profile).order_by('-comment_likes', 'date')
-        comments_all = comments.exclude(commenter=request.user.profile)
+        comments_user =[]
+        like_post=False
+        if request.user.is_authenticated:
+            profile = get_object_or_404(Profile, user=request.user)
+            if post in profile.liked_posts.all():
+                like_post = True
+            comments_user = comments.filter(commenter=request.user.profile).order_by('-comment_likes', 'date')
+            comments_all = comments.exclude(commenter=request.user.profile)
+
+        else:
+            comments_all = comments
         comments_all = comments_all.order_by('comment_likes', '-date')
         comments_req = list(comments_user) + list(comments_all)
         comments_data = []
@@ -108,6 +117,8 @@ def get_post(request, post_id):
             'poster_profile_picture': post.poster.profile_picture.url,
             'poster_username': post.poster.user.username,
             'comments': comments_data,
+            'liked_posts': like_post,
+            'post_likes': post.post_likes.count(),
         }
         print(post.poster)
     return JsonResponse({'post': post_data})

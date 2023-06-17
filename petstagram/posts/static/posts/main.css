@@ -394,6 +394,7 @@ a.article-title:hover {
     position: relative;
     overflow: hidden;
     max-height: 96%;
+
     }
 
 .mdl-post-info {
@@ -403,7 +404,6 @@ a.article-title:hover {
     align-items: flex-start;
     padding: 10px;
     height: 100%;
-    flex: 2;
     max-height: 96%;
 
 }
@@ -532,7 +532,7 @@ a.article-title:hover {
     display: inline-block;
 
 }
-
+/*
 @media (max-width: 768px) {
     .modal-content {
         flex-direction: column;
@@ -544,7 +544,7 @@ a.article-title:hover {
         width: 100%;
     }
 
-    .mdl-post-info {
+    .mdl-post-image {
         height: auto;
     }
-}
+}*/
