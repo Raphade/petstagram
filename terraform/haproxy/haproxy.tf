@@ -1,23 +1,18 @@
-provider "google" {
-    project = "petstagram-389018"
-    credentials = "${file("./credentials.json")}"
-    region = "europe-west3"
-    zone = "europe-west3-b"
-}
-
-resource "google_compute_instance" "webserver" {
+resource "google_compute_instance" "petstagram_webserver" {
   count        = 3
-  name         = "webserver-${count.index}"
+  name         = "petstagram_webserver-${count.index}"
   machine_type = "e2-small"
-  zone         = "europe-west3-b"
-
+  zone         = "europe-west3-b" 
+  network_interface {
+    network = "default"
+  }
   boot_disk {
     initialize_params {
       image = "ubuntu-os-cloud/ubuntu-2204-lts"
     }
   }
 
-  metadata_startup_script = file("startup.sh")
+  metadata_startup_script = file("./petstagram/startup.sh")
 }
 
 resource "google_compute_instance" "haproxy" {
@@ -25,15 +20,18 @@ resource "google_compute_instance" "haproxy" {
   machine_type = "e2-small"
   zone         = "europe-west3-b"
 
+  network_interface {
+    network = "default"
+  }
   boot_disk {
     initialize_params {
       image = "ubuntu-os-cloud/ubuntu-2204-lts"
     }
   }
   metadata_startup_script = templatefile("${path.module}/haproxy.sh", {
-    webserver1_internal_ip = google_compute_instance.webserver[0].network_interface[0].network_ip
-    webserver2_internal_ip = google_compute_instance.webserver[1].network_interface[0].network_ip
-    webserver3_internal_ip = google_compute_instance.webserver[2].network_interface[0].network_ip
+    webserver1_internal_ip = google_compute_instance.petstagram_webserver[0].network_interface[0].network_ip
+    webserver2_internal_ip = google_compute_instance.petstagram_webserver[1].network_interface[0].network_ip
+    webserver3_internal_ip = google_compute_instance.petstagram_webserver[2].network_interface[0].network_ip
   })
 }
 
