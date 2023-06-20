@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'users_pet.apps.UsersPetConfig',
     'crispy_forms',
     'crispy_bootstrap4',
-    'storages'
+    'storages',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
@@ -147,3 +148,4 @@ GS_BUCKET_NAME = 'petstagrambucket'
 GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
     "terraform/credentials.json"
 )
+
