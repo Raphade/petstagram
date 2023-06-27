@@ -1,3 +1,41 @@
+resource "google_sql_database_instance" "petstagram_db" {
+  name             = "petstagram"
+  database_version = "POSTGRES_15"
+  region           = "europe-west3"
+  root_password    = "s3cr3t!123"
+
+  settings {
+    # Second-generation instance tiers are based on the machine
+    # type. See argument reference below.
+    tier      = "db-custom-2-4096"
+    disk_size        = 10
+
+    ip_configuration {
+      ipv4_enabled        = true
+       dynamic "authorized_networks" {
+        for_each = google_compute_instance.petstagram_webserver
+        iterator = petstagram_webserver
+
+        content {
+          name  = petstagram_webserver.value.name
+          value = petstagram_webserver.value.network_interface.0.access_config.0.nat_ip
+        }
+      }
+    }
+  }
+}
+
+resource "google_sql_database" "database" {
+  name     = "petstagram"
+  instance = google_sql_database_instance.petstagram_db.name
+}
+
+resource "google_sql_user" "database_user" {
+  name     = "django"
+  instance = google_sql_database_instance.petstagram_db.name
+  password = "s3cr3t!123"
+}
+
 resource "google_compute_instance" "petstagram_webserver" {
   count        = 3
   name         = "petstagram_webserver-${count.index}"
@@ -12,7 +50,9 @@ resource "google_compute_instance" "petstagram_webserver" {
     }
   }
 
-  metadata_startup_script = file("./petstagram/startup.sh")
+  metadata_startup_script = templatefile("./petstagram/startup.sh", {
+    database_ip = google_compute_instance.petstagram_webserver[0].network_interface[0].network_ip
+  })
 }
 
 resource "google_compute_instance" "haproxy" {

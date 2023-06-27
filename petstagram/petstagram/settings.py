@@ -14,6 +14,10 @@ from pathlib import Path
 from google.oauth2 import service_account
 from django.core.files.storage import default_storage
 import crispy_forms
+import environ
+
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -83,10 +87,10 @@ WSGI_APPLICATION = 'petstagram.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'HOST': '34.159.221.250',
-        'NAME': 'petstagram',
-        'USER': 'django',
-        'PASSWORD': 's3cr3t!123',
+        'HOST': env('DB_HOST'),
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
     }
 }
 

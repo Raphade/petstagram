@@ -11,6 +11,39 @@
   metadata_startup_script = "${file("startup.sh")}"
 }
 */
+
+resource "google_sql_database_instance" "petstagram_db" {
+  name             = "petstagram"
+  database_version = "POSTGRES_15"
+  region           = "europe-west3"
+  root_password    = "s3cr3t!123"
+
+  settings {
+    # Second-generation instance tiers are based on the machine
+    # type. See argument reference below.
+    tier                       = "db-custom-2-4096"
+    disk_size = 10
+    ip_configuration {
+      ipv4_enabled        = true
+      authorized_networks {
+        name = "Public IP"
+        value = google_compute_address.public_ip.address
+        }
+    }
+  }
+}
+
+resource "google_sql_database" "database" {
+  name     = "petstagram"
+  instance = google_sql_database_instance.petstagram_db.name
+}
+
+resource "google_sql_user" "database_user" {
+  name     = "django"
+  instance = google_sql_database_instance.petstagram_db.name
+  password = "s3cr3t!123"
+}
+
 resource "google_compute_instance_template" "instance_template" {
   name                    = "instance-template"
   machine_type            = "e2-small"
@@ -40,7 +73,6 @@ resource "google_compute_instance_group_manager" "webserver_group" {
   }
 
 }
-
 
 resource "google_compute_address" "public_ip" {
   name = "webserver-ip"
@@ -81,18 +113,4 @@ resource "google_compute_forwarding_rule" "forwarding_rule" {
   region      = "europe-west3"
   port_range  = "80"
   target      = google_compute_target_pool.target_pool.self_link
-}
-
-resource "google_sql_database_instance" "database_instance" {
-  name             = "petstagram-db"
-  database_version = "POSTGRES_12"
-  region           = "europe-west3"
-  settings {
-    tier = "db-f1-micro"
-  }
-}
-
-resource "google_sql_database" "database" {
-  name     = "petstagram"
-  instance = google_sql_database_instance.database_instance.name
 }

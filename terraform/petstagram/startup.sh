@@ -5,7 +5,7 @@ sudo /etc/init.d/nginx start    # start nginx
 python - m pip install https://projects.unbit.it/downloads/uwsgi-lts.tar.gz
 pip3 install virtualenv
 
-git clone https://github.com/pfad/zur/app /opt/petstagram
+git clone https://github.com/Raphade/petstagram.git /opt/petstagram
 cd /opt/petstagram
 
 virtualenv venv
@@ -14,10 +14,10 @@ pip install django
 pip install -r requirements.txt
 
 # PostgreSQL-Verbindungseinstellungen
-export DB_HOST="/cloudsql/${GOOGLE_CLOUD_PROJECT}:${REGION}:${INSTANCE}"
-export DB_NAME="database"
-export DB_USER="database-user"
-export DB_PASSWORD="your_password"
+export DB_HOST="<database_ip>"
+export DB_NAME="petstagram"
+export DB_USER="django"
+export DB_PASSWORD="s3cr3t!123"
 
 # configure uwsgi
 echo "[uwsgi]
