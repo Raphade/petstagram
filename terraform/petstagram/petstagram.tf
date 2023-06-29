@@ -1,10 +1,10 @@
 variable "region" {
-  type    = list(string)
-  default = ["europe-west3"]
+  type    = string
+  default = "europe-west3"
 }
 variable "zone" {
-  type    = list(string)
-  default = ["europe-west3-b"]
+  type    = string
+  default = "europe-west3-b"
 }
 
 /*resource "google_compute_instance" "petstagram_webserver" {
@@ -44,7 +44,7 @@ resource "google_compute_subnetwork" "proxy_only" {
   ip_cidr_range = "10.129.0.0/23"
   network       = google_compute_network.default.id
   purpose       = "REGIONAL_MANAGED_PROXY"
-  region        = "us-west1"
+  region        = var.region
   role          = "ACTIVE"
 }
 
@@ -76,10 +76,14 @@ resource "google_compute_firewall" "allow_proxy" {
     ports    = ["8080"]
     protocol = "tcp"
   }
+  allow {
+    ports    = ["22"]
+    protocol = "tcp"
+  }
   direction     = "INGRESS"
   network       = google_compute_network.default.id
   priority      = 1000
-  source_ranges = ["10.129.0.0/23"]
+  source_ranges = ["10.129.0.0/23", "35.235.240.0/20"]
   target_tags   = ["load-balanced-backend"]
 }
 
@@ -118,6 +122,10 @@ resource "google_sql_user" "database_user" {
   password = "s3cr3t!123"
 }
 
+data "google_compute_image" "ubuntu_image" {
+  family  = "ubuntu-2204-lts"
+  project = "ubuntu-os-cloud"
+}
 
 /*  Instance Template and managed Instance Group  */
 resource "google_compute_instance_template" "instance_template" {
@@ -127,14 +135,8 @@ resource "google_compute_instance_template" "instance_template" {
   region                  = var.region
   tags                    = ["load-balanced-backend"]
   network_interface {
-    access_config {
-      network_tier = "PREMIUM"
-    }
     network    = google_compute_network.default.id
     subnetwork = google_compute_subnetwork.default.id
-    access_config {
-      nat_ip = google_compute_address.public_ip.address
-    }
   }
   scheduling {
     automatic_restart   = true
@@ -143,7 +145,7 @@ resource "google_compute_instance_template" "instance_template" {
   }
   disk {
     boot              = true
-    source_image      = "ubuntu-os-cloud/ubuntu-2204-lts"
+    source_image      = data.google_compute_image.ubuntu_image.self_link
     auto_delete       = true
     type              = "PERSISTENT"
   }
@@ -179,9 +181,9 @@ resource "google_compute_address" "public_ip" {
 
 resource "google_compute_region_backend_service" "backend" {
   name                  = "backend-service"
-  region                = "us-west1"
+  region                = var.region
   load_balancing_scheme = "EXTERNAL_MANAGED"
-  health_checks         = [google_compute_http_health_check.health_check.id]
+  health_checks         = [google_compute_region_health_check.health_check.id]
   protocol              = "HTTP"
   session_affinity      = "NONE"
   timeout_sec           = 30
@@ -192,14 +194,19 @@ resource "google_compute_region_backend_service" "backend" {
   }
 }
 
-resource "google_compute_http_health_check" "health_check" {
+resource "google_compute_region_health_check" "health_check" {
   name                = "health-check"
-  request_path       = "/"
   check_interval_sec  = 10
   timeout_sec         = 5
   healthy_threshold   = 2
   unhealthy_threshold = 2
-  port                = 8000
+  http_health_check {
+    port_specification = "USE_SERVING_PORT"
+    proxy_header       = "NONE"
+    request_path       = "/"
+
+  }
+  
 }
 
 resource "google_compute_region_url_map" "map" {

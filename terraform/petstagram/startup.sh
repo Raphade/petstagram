@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /usr/bin/bash
 apt-get update
 apt-get install -y python3-pip python3-dev build-essential libssl-dev libffi-dev nginx
 sudo /etc/init.d/nginx start    # start nginx

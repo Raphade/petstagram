@@ -1,66 +1,10 @@
 variable "region" {
-  type    = list(string)
-  default = ["europe-west3"]
+  type    = string
+  default = "europe-west3"
 }
 variable "zone" {
-  type    = list(string)
-  default = ["europe-west3-b"]
-}
-
-/*  Database server and Database  */
-resource "google_sql_database_instance" "petstagram_db" {
-  name             = "petstagram"
-  database_version = "POSTGRES_15"
-  region           = var.region
-  root_password    = "s3cr3t!123"
-
-  settings {
-    # Second-generation instance tiers are based on the machine
-    # type. See argument reference below.
-    tier             = "db-custom-2-4096"
-    disk_size        = 10
-
-    ip_configuration {
-      ipv4_enabled        = true
-       dynamic "authorized_networks" {
-        for_each = google_compute_instance.petstagram_webserver
-        iterator = petstagram_webserver
-
-        content {
-          name  = petstagram_webserver.value.name
-          value = petstagram_webserver.value.network_interface.0.access_config.0.nat_ip
-        }
-      }
-    }
-  }
-}
-
-resource "google_sql_database" "database" {
-  name     = "petstagram"
-  instance = google_sql_database_instance.petstagram_db.name
-}
-
-resource "google_sql_user" "database_user" {
-  name     = "django"
-  instance = google_sql_database_instance.petstagram_db.name
-  password = "s3cr3t!123"
-}
-
-/*  Network and Subnet  */
-resource "google_compute_network" "default" {
-  name                    = "default-network"
-  auto_create_subnetworks = false
-  routing_mode            = "REGIONAL"
-}
-
-resource "google_compute_subnetwork" "default" {
-  name                       = "backend-subnet"
-  ip_cidr_range              = "10.1.2.0/24"
-  network                    = google_compute_network.default.id
-  private_ipv6_google_access = "DISABLE_GOOGLE_ACCESS"
-  purpose                    = "PRIVATE"
-  region                     = var.region
-  stack_type                 = "IPV4_ONLY"
+  type    = string
+  default = "europe-west3-b"
 }
 
 /*  The Webserver Instances  */
@@ -71,7 +15,7 @@ resource "google_compute_instance" "petstagram_webserver" {
   machine_type = "e2-small"
   zone         = var.zone
   network_interface {
-    network = google_compute_network.default.id
+    network       = google_compute_network.default.id
     subnetwork    = google_compute_subnetwork.default.id
   }
   boot_disk {
@@ -110,6 +54,53 @@ resource "google_compute_instance" "haproxy" {
   })
 }
 
+/*  Database server and Database  */
+resource "google_sql_database_instance" "petstagram_db" {
+  name             = "petstagram"
+  database_version = "POSTGRES_15"
+  region           = var.region
+  root_password    = "s3cr3t!123"
+
+  settings {
+    # Second-generation instance tiers are based on the machine
+    # type. See argument reference below.
+    tier             = "db-custom-2-4096"
+    disk_size        = 10
+
+    ip_configuration {
+      ipv4_enabled        = true
+    }
+  }
+}
+
+resource "google_sql_database" "database" {
+  name     = "petstagram"
+  instance = google_sql_database_instance.petstagram_db.name
+}
+
+resource "google_sql_user" "database_user" {
+  name     = "django"
+  instance = google_sql_database_instance.petstagram_db.name
+  password = "s3cr3t!123"
+}
+
+/*  Network and Subnet  */
+resource "google_compute_network" "default" {
+  name                    = "default-network"
+  auto_create_subnetworks = false
+  routing_mode            = "REGIONAL"
+}
+
+resource "google_compute_subnetwork" "default" {
+  name                       = "backend-subnet"
+  ip_cidr_range              = "10.1.2.0/24"
+  network                    = google_compute_network.default.id
+  private_ipv6_google_access = "DISABLE_GOOGLE_ACCESS"
+  purpose                    = "PRIVATE"
+  region                     = var.region
+  stack_type                 = "IPV4_ONLY"
+}
+
 resource "google_compute_address" "haproxy_ip" {
   name         = "haproxy-ip"
   region       = var.region
@@ -132,7 +123,7 @@ resource "google_compute_firewall" "allow_haproxy" {
 
   allow {
     protocol = "tcp"
-    ports    = ["8080"]
+    ports    = ["8000"]
   }
 }
 
