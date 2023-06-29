@@ -141,11 +141,6 @@ output "webserver_ips" {
 }
 
 output "haproxy_ip" {
-  value = output "webserver_ips" {
-  value = google_compute_instance.petstagram_webserver.*.network_interface[0].network_ip
-}
-
-output "haproxy_ip" {
   value = google_compute_instance.haproxy.network_interface[0].network_ip
 }
-}
+
