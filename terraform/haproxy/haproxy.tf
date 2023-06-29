@@ -17,7 +17,7 @@ resource "google_sql_database_instance" "petstagram_db" {
   settings {
     # Second-generation instance tiers are based on the machine
     # type. See argument reference below.
-    tier      = "db-custom-2-4096"
+    tier             = "db-custom-2-4096"
     disk_size        = 10
 
     ip_configuration {
@@ -71,7 +71,8 @@ resource "google_compute_instance" "petstagram_webserver" {
   machine_type = "e2-small"
   zone         = var.zone
   network_interface {
-    network = "default"
+    network = google_compute_network.default.id
+    subnetwork    = google_compute_subnetwork.default.id
   }
   boot_disk {
     initialize_params {
@@ -80,17 +81,22 @@ resource "google_compute_instance" "petstagram_webserver" {
   }
 
   metadata_startup_script = templatefile("./petstagram/startup.sh", {
-    database_ip = google_compute_instance.petstagram_webserver[0].network_interface[0].network_ip
+    database_ip = google_sql_database_instance.petstagram_db.ip_address
   })
 }
 
+/* HAProxy Instance */
 resource "google_compute_instance" "haproxy" {
   name         = "haproxy-instance"
   machine_type = "e2-small"
   zone         = var.zone
 
   network_interface {
-    network = "default"
+    network = google_compute_network.default.id
+    subnetwork    = google_compute_subnetwork.default.id
+    access_config {
+      nat_ip = google_compute_address.haproxy_ip.address
+    }
   }
   boot_disk {
     initialize_params {
@@ -104,14 +110,15 @@ resource "google_compute_instance" "haproxy" {
   })
 }
 
-resource "google_compute_address" "public_ip" {
-  name   = "webserver-ip"
-  region = var.region
+resource "google_compute_address" "haproxy_ip" {
+  name         = "haproxy-ip"
+  region       = var.region
+  address_type = "EXTERNAL"
 }
 
 resource "google_compute_firewall" "allow_http" {
   name    = "allow-http"
-  network = "default"
+  network = google_compute_network.default.id
 
   allow {
     protocol = "tcp"
@@ -121,7 +128,7 @@ resource "google_compute_firewall" "allow_http" {
 
 resource "google_compute_firewall" "allow_haproxy" {
   name    = "allow-haproxy"
-  network = "default"
+  network = google_compute_network.default.id
 
   allow {
     protocol = "tcp"
@@ -129,6 +136,16 @@ resource "google_compute_firewall" "allow_haproxy" {
   }
 }
 
-output "webserver_ip" {
-  value = google_compute_address.public_ip.address
+output "webserver_ips" {
+  value = google_compute_instance.petstagram_webserver.*.network_interface[0].network_ip
+}
+
+output "haproxy_ip" {
+  value = output "webserver_ips" {
+  value = google_compute_instance.petstagram_webserver.*.network_interface[0].network_ip
+}
+
+output "haproxy_ip" {
+  value = google_compute_instance.haproxy.network_interface[0].network_ip
+}
 }
