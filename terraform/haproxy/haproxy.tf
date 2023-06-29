@@ -1,7 +1,17 @@
+variable "region" {
+  type    = list(string)
+  default = ["europe-west3"]
+}
+variable "zone" {
+  type    = list(string)
+  default = ["europe-west3-b"]
+}
+
+/*  Database server and Database  */
 resource "google_sql_database_instance" "petstagram_db" {
   name             = "petstagram"
   database_version = "POSTGRES_15"
-  region           = "europe-west3"
+  region           = var.region
   root_password    = "s3cr3t!123"
 
   settings {
@@ -36,11 +46,30 @@ resource "google_sql_user" "database_user" {
   password = "s3cr3t!123"
 }
 
+/*  Network and Subnet  */
+resource "google_compute_network" "default" {
+  name                    = "default-network"
+  auto_create_subnetworks = false
+  routing_mode            = "REGIONAL"
+}
+
+resource "google_compute_subnetwork" "default" {
+  name                       = "backend-subnet"
+  ip_cidr_range              = "10.1.2.0/24"
+  network                    = google_compute_network.default.id
+  private_ipv6_google_access = "DISABLE_GOOGLE_ACCESS"
+  purpose                    = "PRIVATE"
+  region                     = var.region
+  stack_type                 = "IPV4_ONLY"
+}
+
+/*  The Webserver Instances  */
+
 resource "google_compute_instance" "petstagram_webserver" {
   count        = 3
   name         = "petstagram_webserver-${count.index}"
   machine_type = "e2-small"
-  zone         = "europe-west3-b" 
+  zone         = var.zone
   network_interface {
     network = "default"
   }
@@ -58,7 +87,7 @@ resource "google_compute_instance" "petstagram_webserver" {
 resource "google_compute_instance" "haproxy" {
   name         = "haproxy-instance"
   machine_type = "e2-small"
-  zone         = "europe-west3-b"
+  zone         = var.zone
 
   network_interface {
     network = "default"
@@ -77,7 +106,7 @@ resource "google_compute_instance" "haproxy" {
 
 resource "google_compute_address" "public_ip" {
   name   = "webserver-ip"
-  region = "europe-west3"
+  region = var.region
 }
 
 resource "google_compute_firewall" "allow_http" {
