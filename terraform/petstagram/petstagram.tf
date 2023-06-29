@@ -1,8 +1,17 @@
+variable "region" {
+  type    = list(string)
+  default = ["europe-west3"]
+}
+variable "zone" {
+  type    = list(string)
+  default = ["europe-west3-b"]
+}
+
 /*resource "google_compute_instance" "petstagram_webserver" {
   count        = 3
   name         = "petstagram_webserver-${count.index}"
   machine_type = "e2-small"
-  zone         = "europe-west3-b"
+  zone         = var.zone
   boot_disk {
     initialize_params {
       image = "ubuntu-os-cloud/ubuntu-2204-lts"
@@ -12,10 +21,74 @@
 }
 */
 
+
+/*  Network Infrastructure  */
+resource "google_compute_network" "default" {
+  name                    = "default-network"
+  auto_create_subnetworks = false
+  routing_mode            = "REGIONAL"
+}
+
+resource "google_compute_subnetwork" "default" {
+  name                       = "backend-subnet"
+  ip_cidr_range              = "10.1.2.0/24"
+  network                    = google_compute_network.default.id
+  private_ipv6_google_access = "DISABLE_GOOGLE_ACCESS"
+  purpose                    = "PRIVATE"
+  region                     = var.region
+  stack_type                 = "IPV4_ONLY"
+}
+
+resource "google_compute_subnetwork" "proxy_only" {
+  name          = "proxy-only-subnet"
+  ip_cidr_range = "10.129.0.0/23"
+  network       = google_compute_network.default.id
+  purpose       = "REGIONAL_MANAGED_PROXY"
+  region        = "us-west1"
+  role          = "ACTIVE"
+}
+
+
+/*  Firewalls  */
+resource "google_compute_firewall" "default" {
+  name = "fw-allow-health-check"
+  allow {
+    protocol = "tcp"
+  }
+  direction     = "INGRESS"
+  network       = google_compute_network.default.id
+  priority      = 1000
+  source_ranges = ["130.211.0.0/22", "35.191.0.0/16"]
+  target_tags   = ["load-balanced-backend"]
+}
+
+resource "google_compute_firewall" "allow_proxy" {
+  name = "fw-allow-proxies"
+  allow {
+    ports    = ["443"]
+    protocol = "tcp"
+  }
+  allow {
+    ports    = ["80"]
+    protocol = "tcp"
+  }
+  allow {
+    ports    = ["8080"]
+    protocol = "tcp"
+  }
+  direction     = "INGRESS"
+  network       = google_compute_network.default.id
+  priority      = 1000
+  source_ranges = ["10.129.0.0/23"]
+  target_tags   = ["load-balanced-backend"]
+}
+
+
+/*  Database Instance and Database  */
 resource "google_sql_database_instance" "petstagram_db" {
   name             = "petstagram"
   database_version = "POSTGRES_15"
-  region           = "europe-west3"
+  region           = var.region
   root_password    = "s3cr3t!123"
 
   settings {
@@ -31,6 +104,7 @@ resource "google_sql_database_instance" "petstagram_db" {
         }
     }
   }
+  deletion_protection = false
 }
 
 resource "google_sql_database" "database" {
@@ -44,52 +118,79 @@ resource "google_sql_user" "database_user" {
   password = "s3cr3t!123"
 }
 
+
+/*  Instance Template and managed Instance Group  */
 resource "google_compute_instance_template" "instance_template" {
   name                    = "instance-template"
   machine_type            = "e2-small"
   can_ip_forward          = true
-  region                  = "europe-west3"
+  region                  = var.region
+  tags                    = ["load-balanced-backend"]
   network_interface {
-    network = "default"
+    access_config {
+      network_tier = "PREMIUM"
+    }
+    network    = google_compute_network.default.id
+    subnetwork = google_compute_subnetwork.default.id
     access_config {
       nat_ip = google_compute_address.public_ip.address
     }
+  }
+  scheduling {
+    automatic_restart   = true
+    on_host_maintenance = "MIGRATE"
+    provisioning_model  = "STANDARD"
   }
   disk {
     boot              = true
     source_image      = "ubuntu-os-cloud/ubuntu-2204-lts"
     auto_delete       = true
+    type              = "PERSISTENT"
   }
   metadata_startup_script = "${file("petstagram/startup.sh")}"
 }
 
-resource "google_compute_instance_group_manager" "webserver_group" {
-  name        = "webserver_group"
-  base_instance_name = "petstagram_webserver"
-  target_size = 2
-  zone        = "europe-west3-b"
+resource "google_compute_instance_group_manager" "webserver-group" {
+  name               = "webserver-group"
+  base_instance_name = "petstagram-webserver"
+  target_size        = 2
+  zone                = var.zone
+  named_port {
+    name = "http"
+    port = 80
+  }
     version {
-    instance_template  = google_compute_instance_template.instance_template.self_link_unique
+    instance_template  = google_compute_instance_template.instance_template.id
+    name               = "primary"
   }
 
 }
 
+
+/*  IP adress for the Load Balancer  */
 resource "google_compute_address" "public_ip" {
   name = "webserver-ip"
-  region = "europe-west3"
+  address_type = "EXTERNAL"
+  network_tier = "STANDARD"
+  region = var.region
 }
 
-resource "google_compute_backend_service" "backend_service" {
-  name             = "backend-service"
-  protocol         = "HTTP"
-  port_name        = "http"
-  timeout_sec      = 30
+/*  Backend and with managed Instacegroup   */
 
+resource "google_compute_region_backend_service" "backend" {
+  name                  = "backend-service"
+  region                = "us-west1"
+  load_balancing_scheme = "EXTERNAL_MANAGED"
+  health_checks         = [google_compute_http_health_check.health_check.id]
+  protocol              = "HTTP"
+  session_affinity      = "NONE"
+  timeout_sec           = 30
   backend {
-    group = google_compute_instance_group_manager.webserver_group.self_link
+    group           = google_compute_instance_group_manager.webserver-group.instance_group
+    balancing_mode  = "UTILIZATION"
+    capacity_scaler = 1.0
   }
 }
-
 
 resource "google_compute_http_health_check" "health_check" {
   name                = "health-check"
@@ -98,19 +199,34 @@ resource "google_compute_http_health_check" "health_check" {
   timeout_sec         = 5
   healthy_threshold   = 2
   unhealthy_threshold = 2
-  port                = 8080
+  port                = 8000
 }
 
-resource "google_compute_target_pool" "target_pool" {
-  name = "target-pool"
-  region = "europe-west3"
-  instances = [google_compute_instance_group_manager.webserver_group.instance_group]
-  health_checks = [google_compute_http_health_check.health_check.self_link]
+resource "google_compute_region_url_map" "map" {
+  name            = "map"
+  region          = var.region
+  default_service = google_compute_region_backend_service.backend.id
+}
+
+resource "google_compute_region_target_http_proxy" "proxy" {
+  name    = "proxy"
+  region  = var.region
+  url_map = google_compute_region_url_map.map.id
 }
 
 resource "google_compute_forwarding_rule" "forwarding_rule" {
-  name        = "forwarding-rule"
-  region      = "europe-west3"
-  port_range  = "80"
-  target      = google_compute_target_pool.target_pool.self_link
+  name                  = "forwarding-rule"
+  depends_on            = [google_compute_subnetwork.proxy_only]
+  region                = var.region
+  port_range            = "80"
+  ip_protocol           = "TCP"
+  ip_address            = google_compute_address.public_ip.id
+  network               = google_compute_network.default.id
+  target                = google_compute_region_target_http_proxy.proxy.id
+  load_balancing_scheme = "EXTERNAL_MANAGED"
+  network_tier          = "STANDARD"
+}
+
+output "public_ip" {
+  value = google_compute_address.public_ip.address
 }
