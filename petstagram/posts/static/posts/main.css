@@ -1,0 +1,540 @@
+body {
+    background: #fafafa;
+    color: #333333;
+    margin-top: 5rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #444444;
+}
+
+ul {
+    margin: 0;
+}
+
+.bg-steel {
+    background-color: #5f788a;
+}
+
+.site-header .navbar-nav .nav-link {
+    color: #cbd5db;
+}
+
+.site-header .navbar-nav .nav-link:hover {
+    color: #ffffff;
+}
+
+.site-header .navbar-nav .nav-link.active {
+    font-weight: 500;
+}
+
+.content-section {
+    background: #ffffff;
+    padding: 10px 20px;
+    border: 1px solid #dddddd;
+    border-radius: 3px;
+    margin-bottom: 20px;
+}
+
+.article-title {
+    color: #444444;
+}
+
+a.article-title:hover {
+    color: #428bca;
+    text-decoration: none;
+}
+
+.article-content {
+    white-space: pre-line;
+}
+
+.article-img {
+    height: 65px;
+    width: 65px;
+    margin-right: 16px;
+}
+
+.article-metadata {
+    padding-bottom: 1px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid #e3e3e3
+}
+
+.article-metadata a:hover {
+    color: #333;
+    text-decoration: none;
+}
+
+.article-svg {
+    width: 25px;
+    height: 25px;
+    vertical-align: middle;
+}
+
+.account-img {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+
+.account-heading {
+    font-size: 2.5rem;
+}
+
+
+/* Stil für den Post-Container */
+.post-container {
+    margin-top: 20px;
+}
+
+/* Stil für einen einzelnen Post */
+.post {
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+    padding: 10px;
+}
+
+/* Stil für den Post-Header */
+.post-header {
+    display: flex;
+    align-items: center;
+    margin: 3%;
+}
+
+.profile-picture {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.mdl-profile-picture {
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+}
+
+/* Stil für den Post-Bildbereich */
+.post-image img {
+    width: 400px;
+    height: auto;
+
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+/* Stil für die Post-Beschreibung */
+.post-description {
+    margin: 3%;
+}
+
+/* Stil für den Post-Footer */
+.post-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 3%;
+}
+
+.post-date {
+    font-size: 12px;
+    margin-left: auto;
+}
+
+.post-likes {
+    font-size: 14px;
+}
+.liked {
+    color: red;
+}
+
+.post-comment {
+    margin-right: 20px;
+}
+
+/* Stil für die Kommentare */
+.post-comments {
+    margin-top: 10px;
+}
+
+.comment {
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+.commenter {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.commenter .profile-picture {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.comment-text {
+    margin-left: 10px;
+    font-size: 14px;
+}
+
+.comment-likes {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+}
+
+.post-like-button {
+    font-size: 30px;
+    transition: transform 0.3s, opacity 0.3s;
+}
+
+.comment-like-button {
+    font-size: 15px;
+    transition: transform 0.3s, opacity 0.3s;
+}
+
+.post-like-button:hover {
+    transform: scale(1.3);
+    opacity: 0.7;
+}
+
+.comment-like-button:hover {
+    transform: scale(1.2);
+    opacity: 0.6;
+}
+
+.comment-button {
+    font-size: 30px;
+    transition: transform 0.3s, opacity 0.3s;
+}
+
+.comment-button:hover {
+    transform: scale(1.3);
+    opacity: 0.7;
+}
+
+
+/* CSS für das Modal-Fenster */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.post-details {
+    display: flex;
+}
+
+.post-image img {
+    width: 400px;
+    height: auto;
+}
+
+.poster-info {
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.comments-section {
+    margin-top: 10px;
+    border-top: 1px solid #ccc;
+    width: 100%;
+}
+
+/*.comment {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}*/
+.comment {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.commenter-info {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+}
+
+.commenter-info img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.commenter-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.like-button,
+.comment-button {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.comment-input input[type="text"] {
+    width: 80%;
+    padding: 5px;
+    margin-right: 5px;
+}
+
+.comment-input button {
+    padding: 5px 10px;
+}
+
+.sidebar-list:hover {
+    background-color: #eaeaea;
+}
+
+.sidebar-list {
+    cursor: pointer;
+}
+
+.list-group a {
+    text-decoration: none;
+}
+
+.upload-box {
+    align-content: center;
+    position: relative;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    height: 400px; /* Anpassung der Höhe der Box */
+    overflow: hidden;
+}
+
+.upload-box img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.upload-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border: 2px dashed #ccc;
+    padding: 20px;
+    cursor: pointer;
+}
+
+.upload-label i {
+    margin-right: 10px;
+}
+
+.image-preview {
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    height: calc(100% - 40px); /* Anpassung der Höhe des Preview-Bereichs */
+}
+
+.image-preview.show {
+    display: flex;
+}
+
+.image-preview img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.file-input {
+    opacity: 0;
+}
+
+
+/*class="modal" zum Kommentschreiben*/
+
+.mdl-post-image img {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    flex: 2;
+    align-self: flex-start;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.mdl-post-image {
+    width: 75%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    flex: 4;
+    align-self: flex-start;
+    position: relative;
+    overflow: hidden;
+    max-height: 96%;
+
+    }
+
+.mdl-post {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px;
+    height: 100%;
+    max-height: 96%;
+
+}
+.mdl-container-left {
+    width: 45%;
+}
+
+.mdl-post-details {
+  display: flex;
+  height: 100%
+}
+
+.mdl-like-comment {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    width: -moz-available;
+}
+
+.mdl-comments {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    width: -moz-available;
+}
+.mdl-comment-bottom {
+    height: 75px;
+    /*overflow-y: auto;*/
+    padding: 5px;
+    border-top: 1px solid #ccc;
+    display: flex;
+    justify-content: space-between;
+}
+.mdl-comment-input {
+    /*height: 40px;*/
+
+    height: 100%;
+    resize: none;
+    overflow-y: auto;
+    width: 90%;
+}
+
+.comment-on-post{
+    height: 40px;
+    background-color: #3897f0;
+    color: #fff;
+    border: none;
+    margin-left: 5px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.mdl-post-info{
+    margin-top: 3px;
+}
+.mdl-poster-info{
+    margin-bottom: 5px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.mdl-post-description {
+    display: flex;
+    align-items: center;
+    width: -moz-available;
+}
+
+
+.poster-info img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 20px;
+}
+
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 6% auto;
+    padding: 10px;
+    border: 1px solid #888;
+    width: 80%;
+    height: 80%;
+    max-width: 90%;
+    max-height: 90%
+}
+
+.post-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+}
+
+.post-info {
+    flex: 1;
+}
+
+.actions {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    width: -moz-available;
+    border-top: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-bottom {
+    align-items: center;
+    margin-bottom: 10px;
+    margin-top: auto;
+    width: -moz-available;
+}
+
+
+.mdl-comment-bottom label[for="id_text"] {
+    display: inline-block;
+}
