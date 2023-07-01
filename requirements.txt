@@ -1,0 +1,9 @@
+Django==4.1.7
+django-crispy-forms == 2.0
+crispy-bootstrap4 == 2022.1 # changed to proper version (https://pypi.org/project/crispy-bootstrap4/#history)
+Pillow==9.5.0
+psycopg2==2.9.6
+django-email-users~=1.1.0
+google-cloud-storage~=2.9.0
+django-storages[google]
+django-environ==0.10.0
