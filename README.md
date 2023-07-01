@@ -42,8 +42,8 @@ This part describes how to set up the DB
    https://www.enterprisedb.com/downloads/postgres-postgresql-downloads
 2. install postgresql
    ```
-   pw: 123456789
-   port: 5432
+   pw: ****
+   port: ****
    Locale: German
    ```
 3. start pgAdmin 4 and login with the pw
@@ -72,5 +72,5 @@ This part describes how to run the application
    python <pathto>/manage.py createsuperuser
    ```
    follow instructions in the terminal
-   Username: postgres
-   Password: 123456789
+   Username: ****
+   Password: ****
