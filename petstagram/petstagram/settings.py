@@ -157,7 +157,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 GS_BUCKET_NAME = os.environ.get('BUCKET')
-#GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-#    "credentials.json"
-#)
+GS_CREDENTIALS = google.auth.default()
 
