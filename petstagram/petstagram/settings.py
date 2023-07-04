@@ -15,6 +15,8 @@ from google.oauth2 import service_account
 from django.core.files.storage import default_storage
 import crispy_forms
 import environ
+from google.auth.transport import requests
+from google.auth import default, compute_engine
 
 env = environ.Env()
 environ.Env.read_env()
@@ -26,12 +28,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('DJANGO_SECRET_KEY')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -84,15 +86,34 @@ WSGI_APPLICATION = 'petstagram.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'filters': None,
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'HOST': env('DB_HOST'),
-        'NAME': env('DB_NAME'),
-        'USER': env('DB_USER'),
-        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -127,7 +148,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
-
+STATIC_ROOT = "/opt/petstagram/static/"
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # Default primary key field type
@@ -137,10 +158,24 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
-GS_BUCKET_NAME = 'petstagrambucket'
-GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-    "terraform/credentials.json"
-)
+GS_BUCKET_NAME = os.environ.get('BUCKET')
+credentials, _ = default()
+
+# auth_request = requests.Request()
+# credentials.refresh(auth_request)
+#
+# signing_credentials = compute_engine.IDTokenCredentials(
+#     auth_request,
+#     "",
+#     service_account_email=credentials.service_account_email
+# )
+# signed_url = signed_blob_path.generate_signed_url(
+#     expires_at_ms,
+#     credentials=signing_credentials,
+#     version="v4"
+# )
+GS_DEFAULT_ACL = 'publicRead'
+GS_CREDENTIALS = credentials
 
 GS_DEFAULT_ACL = None
 GS_QUERYSTRING_AUTH = False
