@@ -14,6 +14,10 @@ from pathlib import Path
 from google.oauth2 import service_account
 from django.core.files.storage import default_storage
 import crispy_forms
+import environ
+
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@yb#u-8@hyll608-*nbjp+ljid1=y^c&hi@7dydc-u=of$cfz3'
+SECRET_KEY = env('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -83,23 +87,12 @@ WSGI_APPLICATION = 'petstagram.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'HOST': '34.159.221.250',
-        'NAME': 'petstagram',
-        'USER': 'django',
-        'PASSWORD': 's3cr3t!123',
+        'HOST': env('DB_HOST'),
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
     }
 }
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'petstagram',
-#         'USER': 'postgres',
-#         'PASSWORD': '123456789',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#     }
-# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -146,7 +139,6 @@ MEDIA_URL = "/media/"
 DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 GS_BUCKET_NAME = 'petstagrambucket'
 GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-    "petstagram/petstagram/credentials.json"
+    "terraform/credentials.json"
 )
-GS_QUERYSTRING_AUTH = False
-GS_DEFAULT_ACL = None
+
