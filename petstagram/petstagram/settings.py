@@ -161,19 +161,19 @@ DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 GS_BUCKET_NAME = os.environ.get('BUCKET')
 credentials, _ = default()
 
-auth_request = requests.Request()
-credentials.refresh(auth_request)
-
-signing_credentials = compute_engine.IDTokenCredentials(
-    auth_request,
-    "",
-    service_account_email=credentials.service_account_email
-)
-signed_url = signed_blob_path.generate_signed_url(
-    expires_at_ms,
-    credentials=signing_credentials,
-    version="v4"
-)
-
+# auth_request = requests.Request()
+# credentials.refresh(auth_request)
+#
+# signing_credentials = compute_engine.IDTokenCredentials(
+#     auth_request,
+#     "",
+#     service_account_email=credentials.service_account_email
+# )
+# signed_url = signed_blob_path.generate_signed_url(
+#     expires_at_ms,
+#     credentials=signing_credentials,
+#     version="v4"
+# )
+GS_DEFAULT_ACL = 'publicRead'
 GS_CREDENTIALS = credentials
 
