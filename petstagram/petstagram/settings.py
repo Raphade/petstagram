@@ -142,3 +142,5 @@ GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
     "terraform/credentials.json"
 )
 
+GS_DEFAULT_ACL = None
+GS_QUERYSTRING_AUTH = False
