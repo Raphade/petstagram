@@ -177,5 +177,5 @@ credentials, _ = default()
 #GS_DEFAULT_ACL = 'publicRead'
 GS_CREDENTIALS = credentials
 
-GS_DEFAULT_ACL = None
-GS_QUERYSTRING_AUTH = False
+GS_DEFAULT_ACL = 'publicRead'
+#GS_QUERYSTRING_AUTH = False
