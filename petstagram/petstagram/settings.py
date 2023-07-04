@@ -15,7 +15,8 @@ from google.oauth2 import service_account
 from django.core.files.storage import default_storage
 import crispy_forms
 import environ
-import google.auth
+from google.auth.transport import requests
+from google.auth import default, compute_engine
 
 env = environ.Env()
 environ.Env.read_env()
@@ -158,5 +159,21 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 GS_BUCKET_NAME = os.environ.get('BUCKET')
-GS_CREDENTIALS = google.auth.default()
+credentials, _ = default()
+
+auth_request = requests.Request()
+credentials.refresh(auth_request)
+
+signing_credentials = compute_engine.IDTokenCredentials(
+    auth_request,
+    "",
+    service_account_email=credentials.service_account_email
+)
+signed_url = signed_blob_path.generate_signed_url(
+    expires_at_ms,
+    credentials=signing_credentials,
+    version="v4"
+)
+
+GS_CREDENTIALS = credentials
 
