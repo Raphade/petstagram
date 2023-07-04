@@ -174,7 +174,7 @@ credentials, _ = default()
 #     credentials=signing_credentials,
 #     version="v4"
 # )
-GS_DEFAULT_ACL = 'publicRead'
+#GS_DEFAULT_ACL = 'publicRead'
 GS_CREDENTIALS = credentials
 
 GS_DEFAULT_ACL = None
