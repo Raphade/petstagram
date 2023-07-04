@@ -169,7 +169,7 @@ def profile(request, user_id):
         'user': profile,
         'user_posts': page_obj,
     }
-    return render(request, 'posts/profile.html', {'user': user, 'user_posts': page_obj})
+    return render(request, 'posts/profile.html', {'profile': user, 'user_posts': page_obj})
 
 
 @login_required
